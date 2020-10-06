@@ -11,9 +11,10 @@ import CreateGame from "routes/Admin/CreateGame";
 import GameDetail from "routes/Admin/GameDetail";
 import Results from "routes/Admin/Results";
 import EditGame from "routes/Admin/EditGame";
-import Navigation from "./Navigation";
+import Navigation from "components/Admin/Navigation";
+import GameStart from "routes/Client/GameStart";
 
-const AppRouter = ({ isLoggedIn }) => {
+const AdminRouter = ({ isLoggedIn }) => {
   return (
     <Router>
       {isLoggedIn && <Navigation />}
@@ -43,7 +44,7 @@ const AppRouter = ({ isLoggedIn }) => {
         ) : (
           <>
             <Route exact path="/">
-              <p>Auth</p>
+              <GameStart />
             </Route>
             <Redirect from="*" to="/" />
           </>
@@ -53,4 +54,4 @@ const AppRouter = ({ isLoggedIn }) => {
   );
 };
 
-export default AppRouter;
+export default AdminRouter;
