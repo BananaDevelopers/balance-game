@@ -15,6 +15,7 @@ import Navigation from "components/Admin/Navigation";
 import GameStart from "routes/Client/GameStart";
 
 const AdminRouter = ({ isLoggedIn }) => {
+
   return (
     <Router>
       {isLoggedIn && <Navigation />}

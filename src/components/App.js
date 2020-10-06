@@ -3,10 +3,10 @@ import AdminRouter from "components/Admin/AdminRouter";
 import UserRouter from "components/Client/UserRouter";
 
 function App() {
-  const [init, setInit] = useState(false);
+  const [init, setInit] = useState(true);
   return (
     <>
-      {init ? <AdminRouter /> : <UserRouter />}
+      {init ? <AdminRouter isLoggedIn={true} /> : <UserRouter />}
       <footer>&copy; Banana Dev {new Date().getFullYear()}</footer>
     </>
   );
