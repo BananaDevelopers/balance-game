@@ -5,13 +5,13 @@ import {
   Route,
   Switch,
 } from "react-router-dom";
-import Home from "../routes/Home";
+import Home from "routes/Admin/Home";
+import GameList from "routes/Admin/GameList";
+import CreateGame from "routes/Admin/CreateGame";
+import GameDetail from "routes/Admin/GameDetail";
+import Results from "routes/Admin/Results";
+import EditGame from "routes/Admin/EditGame";
 import Navigation from "./Navigation";
-import GameList from "../routes/GameList";
-import CreateGame from "../routes/CreateGame";
-import GameDetail from "../routes/GameDetail";
-import Results from "../routes/Results";
-import EditGame from "../routes/EditGame";
 
 const AppRouter = ({ isLoggedIn }) => {
   return (

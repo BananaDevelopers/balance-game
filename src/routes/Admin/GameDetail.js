@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, Redirect, useHistory, useParams } from "react-router-dom";
-import { dbService } from "../fbase";
+import { dbService } from "fbase";
 
 const GameDetail = () => {
   let params = useParams();

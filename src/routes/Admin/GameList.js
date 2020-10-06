@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Game from "../components/Game";
-import { dbService } from "../fbase";
+import Game from "components/Admin/Game";
+import { dbService } from "fbase";
 
 const GameList = () => {
   const [search, setSearch] = useState("");
