@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 
 const CreateGame = () => {
-  return <div>Create Game</div>;
+
+  const [user, setUser] = useState("")
+
+  return (
+    <>
+    </>
+  )
+
+
 };
 
 export default CreateGame;
