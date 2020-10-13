@@ -27,10 +27,10 @@ const reducer = (state, action) => {
       }
     }
     case DEL_COMMENT:{
-      console.log(action.cmtObj)
+      console.log("del",action.cmtObj)
       return{
         ...state,
-        comments: state.comments.filter(c => c.docid != action.cmtObj.docid)
+        comments: state.comments.filter(c => c != action.cmtObj)
       }
     }
     case SET_COMMENT:{

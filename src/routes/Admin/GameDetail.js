@@ -50,19 +50,12 @@ const GameDetail = () => {
     if (gameRef) {
       gameRef.onSnapshot((observer) => {
         let game = observer.data();
-        console.log(game) // 왜 undefined
+        // console.log(game) // 왜 undefined
         if(game !== undefined){
           setTitle(game.title);
-          if (first) {
-            game.quizzes.map((quizId)=>
-              setQuizIDs((prevQuizIDs) => [...prevQuizIDs, quizId])
-            )
-            setFirst(false);
-          }
           game.quizzes.map((quizId)=>
             findQuizById(quizId)
           )
-        
           setIsLoading(true);
         }
       });
@@ -75,20 +68,24 @@ const GameDetail = () => {
     dbService.collection("quiz").doc(quizId)
     .get()
     .then(function(doc) {
-        if (doc.exists) {
-          const quizObj = {
-            id: quizId,
-            ...doc.data()
-          }
-          setQuizzes((prevQuizzes)=>[...prevQuizzes, quizObj])
-          
-          console.log("Document data:", quizObj);
-        } else {
-            console.log("No such document!");
+      if (doc.exists) {
+        const quizObj = {
+          id: quizId,
+          ...doc.data()
         }
+        if (first) {
+          setQuizzes((prevQuizzes)=>[...prevQuizzes, quizObj]);
+          setQuizIDs((prevQuizIDs)=>[...prevQuizIDs, quizId]);
+        }
+        console.log("Document data:", quizObj);
+      } else {
+          console.log("No such document!");
+      }
     }).catch(function(error) {
         console.log("Error getting document:", error);
     });
+
+    setFirst(false);
   }
 
   const onDeleteClick = async () => {
@@ -141,8 +138,6 @@ const GameDetail = () => {
       date: Date.now(),
     };
 
-    let quizID;
-
     await dbService.collection("quiz").add(quizObj).then((docRef)=>(
       quizObj = {
         id: docRef.id,
@@ -150,10 +145,10 @@ const GameDetail = () => {
       }
     ));
 
-    console.log(quizObj);
+    const newId = quizObj.id;
 
     setQuizzes((prevQuizzes)=>[...prevQuizzes, quizObj]);
-    setQuizIDs((prevQuizIDs) => [...prevQuizIDs, quizObj.id]);
+    setQuizIDs((prevQuizIDs)=>[...prevQuizIDs, newId]);
 
     console.log(quizIDs);
     
