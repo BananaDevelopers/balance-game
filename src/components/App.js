@@ -3,7 +3,7 @@ import AdminRouter from "components/Admin/AdminRouter";
 import UserRouter from "components/Client/UserRouter";
 
 function App() {
-  const [init, setInit] = useState(false);
+  const [init, setInit] = useState(true);
   return (
     <>
       {init ? <AdminRouter /> : <UserRouter />}

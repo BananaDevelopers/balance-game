@@ -14,41 +14,30 @@ import EditGame from "routes/Admin/EditGame";
 import Navigation from "components/Admin/Navigation";
 import GameStart from "routes/Client/GameStart";
 
-const AdminRouter = ({ isLoggedIn }) => {
+const AdminRouter = () => {
   return (
-    <Router>
-      {isLoggedIn && <Navigation />}
+    <Router basename="/admin">
+      <Navigation />
       <Switch>
-        {isLoggedIn ? (
-          <div>
-            <Route exact path="/">
-              <Home />
-            </Route>
-            <Route exact path="/createGame">
-              <CreateGame />
-            </Route>
-            <Route exact path="/gameList">
-              <GameList />
-            </Route>
-            <Route exact path="/gameDetail/:id">
-              <GameDetail />
-            </Route>
-            <Route exact path="/editGame/:id">
-              <EditGame />
-            </Route>
-            <Route exact path="/results/:id">
-              <Results />
-            </Route>
-            <Redirect from="*" to="/" />
-          </div>
-        ) : (
-          <>
-            <Route exact path="/">
-              <GameStart />
-            </Route>
-            <Redirect from="*" to="/" />
-          </>
-        )}
+        <Route exact path="/">
+          <Home />
+        </Route>
+        <Route exact path="/createGame">
+          <CreateGame />
+        </Route>
+        <Route exact path="/gameList">
+          <GameList />
+        </Route>
+        <Route exact path="/gameDetail/:id">
+          <GameDetail />
+        </Route>
+        <Route exact path="/editGame/:id">
+          <EditGame />
+        </Route>
+        <Route exact path="/results/:id">
+          <Results />
+        </Route>
+        <Redirect from="*" to="/" />
       </Switch>
     </Router>
   );
