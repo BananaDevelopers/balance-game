@@ -11,14 +11,15 @@ const CreateGame = () => {
   const [quizTitle, setQuizTitle] = useState("");
   const [QuizL, setQuizL] = useState("");
   const [QuizR, setQuizR] = useState("");
+  const [quizIdArray, setQuizIdArray] = useState([]);
   const [quizArray, setQuizArray] = useState([]);
-
+  
   const [quizCount, setQuizCount] = useState(0);
-  const [gameArray, setGameArray] = useState([]);
 
-  const onSubmit = async(event) => {
+  const MIN_QUIZ_COUNT = 2;
+
+  const onSubmit = async (event) => {
     event.preventDefault();
-
     switch (event.target.name) {
       case "title":
         setTitleFlag(true);
@@ -34,50 +35,60 @@ const CreateGame = () => {
             comments: [],
             date: Date.now(),
           };
-          await dbService.collection("quiz").add(quizObj).then((docRef)=>(
-            setGameArray([...gameArray, docRef.id])
-          ));
-          console.log(gameArray);
+          await dbService
+            .collection("quiz")
+            .add(quizObj)
+            .then((docRef) => setQuizIdArray([...quizIdArray, docRef.id]));
           setQuizArray([...quizArray, quizObj]);
+
+          console.log("quizIdArray")
+          console.log(quizIdArray)
+          console.log("quizArray")
+          console.log(quizArray)
+
           setQuizCount(quizCount + 1);
-          setQuizTitle("");
-          setQuizL("");
-          setQuizR("");
-          
-        }
-        else {
+          initAddQuizForm();
+        } else {
           alert("빈칸 X!");
         }
         break;
-      case "addGame":
-        if (quizCount < 2) {
-          alert("문제 더!");
-        }
-        else {
-          const gameObj = {
-            title: gameTitle,
-            quizzes: gameArray,
-            results: [],
-            date: Date.now(),
-          };
-          await dbService.collection("game").add(gameObj).then(()=>{
-            history.push(`/gameList`);
-          });
-        }
-        break;
+
       default:
         break;
     }
+  };
 
-  }
+  const initAddQuizForm = () => {
+    setQuizTitle("");
+    setQuizL("");
+    setQuizR("");
+  };
+
+  const onAddGameClick = async () => {
+    if (quizCount < MIN_QUIZ_COUNT) {
+      alert("문제 더!");
+    } else {
+      const gameObj = {
+        title: gameTitle,
+        quizzes: quizIdArray,
+        results: [],
+        date: Date.now(),
+      };
+      await dbService
+        .collection("game")
+        .add(gameObj)
+        .then(() => {
+          history.push(`/gameList`);
+        });
+    }
+  };
 
   const onChange = (event) => {
-
     const {
-      target: {value},
+      target: { value },
     } = event;
 
-    switch(event.target.name) {
+    switch (event.target.name) {
       case "gameTitle":
         setGameTitle(value);
         break;
@@ -93,43 +104,84 @@ const CreateGame = () => {
       default:
         break;
     }
-  }
+  };
+
+  const QuizList = ({ key, title, QuizL, QuizR }) => {
+    return (
+      <h5 key={key}>
+        {title} ? {QuizL} VS {QuizR}
+      </h5>
+    );
+  };
 
   return (
     <>
-      <h5>게임 이름</h5>
-      {!titleFlag &&
-        <form name="title" onSubmit={onSubmit}>
-          <input name="gameTitle" value={gameTitle} onChange={onChange} type="text" placeholder="게임 이름" />
-          <input type="submit" value="완료" />
-        </form>
-      }
-      {titleFlag &&
+      <h1>게임 추가</h1>
+      {!titleFlag ? (
         <>
-          <form name="addQuiz" onSubmit={onSubmit} style= {
-            {
-              display : "flex", flexDirection: "column", width: "200px",
-            }
-          }>
-            <input name="quizTitle" value={quizTitle} onChange={onChange} type="text" placeholder="퀴즈 이름" />
-            <input name="QuizL" value={QuizL} onChange={onChange} type="text" placeholder="왼쪽 지문" />
-            <input name="QuizR" value={QuizR} onChange={onChange} type="text" placeholder="오른쪽 지문" />
+          <p>게임 이름</p>
+          <form name="title" onSubmit={onSubmit}>
+            <input
+              name="gameTitle"
+              value={gameTitle}
+              onChange={onChange}
+              type="text"
+              placeholder="게임 이름"
+            />
+            <input type="submit" value="완료" />
+          </form>
+        </>
+      ) : (
+        <>
+          <h5>게임 이름: {gameTitle}</h5>
+          <form
+            name="addQuiz"
+            onSubmit={onSubmit}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              width: "200px",
+            }}
+          >
+            <input
+              name="quizTitle"
+              value={quizTitle}
+              onChange={onChange}
+              type="text"
+              placeholder="퀴즈 이름"
+            />
+            <input
+              name="QuizL"
+              value={QuizL}
+              onChange={onChange}
+              type="text"
+              placeholder="왼쪽 지문"
+            />
+            <input
+              name="QuizR"
+              value={QuizR}
+              onChange={onChange}
+              type="text"
+              placeholder="오른쪽 지문"
+            />
             <input type="submit" value="추가" />
           </form>
           <div>
-            {quizArray.map((quizObj) =>
-              <h5 key={quizObj.date}>{quizObj.title} ? {quizObj.QuizL} VS {quizObj.QuizR}</h5>
-            )}
-            <h5>추가된 문제 수 : {quizCount}</h5>
-            <form name="addGame" onSubmit={onSubmit}>
-              <input type="submit" value="문제 추가" />
-            </form>
+            {quizArray.map((quizObj) => (
+              <QuizList
+                key={quizObj.date}
+                title={quizObj.title}
+                QuizL={quizObj.QuizL}
+                QuizR={quizObj.QuizR}
+              />
+            ))}
           </div>
+          <h5>추가된 문제 수 : {quizCount}</h5>
+          <button onClick={onAddGameClick}>문제 추가</button>
         </>
-      }
+      )}
     </>
   );
-
 };
 
 export default CreateGame;
