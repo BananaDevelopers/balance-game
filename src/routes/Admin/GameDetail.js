@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, Redirect, useHistory, useParams } from "react-router-dom";
-import { dbService } from "fbase";
+import { dbService, firebaseInstance } from "fbase";
 import Quiz from "components/Admin/Quiz";
 
 const GameDetail = () => {
@@ -18,17 +18,14 @@ const GameDetail = () => {
   const [QuizR, setQuizR] = useState("");
   const [quizIDs, setQuizIDs] = useState([]);
 
-  const [first, setFirst] = useState(true);
-
   const onChange = (event) => {
-
     const {
-      target: {value},
+      target: { value },
     } = event;
 
-    switch(event.target.name) {
+    switch (event.target.name) {
       case "gameTitle":
-        setTitle(value)
+        setTitle(value);
         break;
       case "quizTitle":
         setQuizTitle(value);
@@ -42,7 +39,7 @@ const GameDetail = () => {
       default:
         break;
     }
-  }
+  };
 
   useEffect(() => {
     setId(params.id);
@@ -51,11 +48,9 @@ const GameDetail = () => {
       gameRef.onSnapshot((observer) => {
         let game = observer.data();
         // console.log(game) // 왜 undefined
-        if(game !== undefined){
+        if (game !== undefined) {
           setTitle(game.title);
-          game.quizzes.map((quizId)=>
-            findQuizById(quizId)
-          )
+          game.quizzes.map((quizId) => findQuizById(quizId));
           setIsLoading(true);
         }
       });
@@ -65,28 +60,30 @@ const GameDetail = () => {
   }, []);
 
   const findQuizById = (quizId) => {
-    dbService.collection("quiz").doc(quizId)
-    .get()
-    .then(function(doc) {
-      if (doc.exists) {
-        const quizObj = {
-          id: quizId,
-          ...doc.data()
-        }
-        if (first) {
-          setQuizzes((prevQuizzes)=>[...prevQuizzes, quizObj]);
-          setQuizIDs((prevQuizIDs)=>[...prevQuizIDs, quizId]);
-        }
-        console.log("Document data:", quizObj);
-      } else {
+    setQuizzes([])
+    setQuizIDs([])
+    dbService
+      .collection("quiz")
+      .doc(quizId)
+      .get()
+      .then(function (doc) {
+        if (doc.exists) {
+          const quizObj = {
+            id: quizId,
+            ...doc.data(),
+          };
+            setQuizzes((prevQuizzes) => [...prevQuizzes, quizObj]);
+            setQuizIDs((prevQuizIDs) => [...prevQuizIDs, quizId]);
+          console.log("Document data:", quizObj);
+        } else {
           console.log("No such document!");
-      }
-    }).catch(function(error) {
+        }
+      })
+      .catch(function (error) {
         console.log("Error getting document:", error);
-    });
+      });
 
-    setFirst(false);
-  }
+  };
 
   const onDeleteClick = async () => {
     const ok = window.confirm("Are you sure you want to delete this game?");
@@ -94,26 +91,31 @@ const GameDetail = () => {
       await dbService
         .doc(`game/${id}`)
         .delete()
-        .then(() => {history.push("/gameList")});  // 게임리스트로 돌아가기가 안됌
+        .then(() => {
+          history.push("/gameList");
+        }); // 게임리스트로 돌아가기가 안됌
     }
   };
 
   const onEditClick = () => {
     // history.push(`/editGame/${id}`);
-    setClickedEditGame(!clickedEditGame)
-    if(clickedEditGame){
+    setClickedEditGame(!clickedEditGame);
+    if (clickedEditGame) {
       // 완료 버튼 클릭시
       // 바뀐 title로 game 업데이트
-      dbService.collection("game").doc(id).update({
+      dbService
+        .collection("game")
+        .doc(id)
+        .update({
           title: title,
-      })
-      .then(function() {
+        })
+        .then(function () {
           console.log("Document successfully updated!");
-      })
-      .catch(function(error) {
+        })
+        .catch(function (error) {
           // The document probably doesn't exist.
           console.error("Error updating document: ", error);
-      });
+        });
     }
   };
 
@@ -123,11 +125,10 @@ const GameDetail = () => {
 
   const onAddQuizClick = () => {
     setIsAddQuiz(true);
-  }
+  };
 
-  const onSubmit = async(event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
-
     let quizObj = {
       title: quizTitle,
       QuizL: QuizL,
@@ -138,25 +139,22 @@ const GameDetail = () => {
       date: Date.now(),
     };
 
-    await dbService.collection("quiz").add(quizObj).then((docRef)=>(
-      quizObj = {
-        id: docRef.id,
-        ...quizObj,
-      }
-    ));
+    await dbService
+      .collection("quiz")
+      .add(quizObj)
+      .then((docRef) => {
+        quizObj = {
+          id: docRef.id,
+          ...quizObj,
+        };
+      });
 
     const newId = quizObj.id;
 
-    setQuizzes((prevQuizzes)=>[...prevQuizzes, quizObj]);
-    setQuizIDs((prevQuizIDs)=>[...prevQuizIDs, newId]);
-
-    console.log(quizIDs);
-    
     await dbService.doc(`game/${id}`).update({
-      quizzes: quizIDs,
-    })
-
-  }
+      quizzes: firebaseInstance.firestore.FieldValue.arrayUnion(newId)
+    });
+  };
 
   return (
     <div>
@@ -165,34 +163,70 @@ const GameDetail = () => {
           <h1>게임 상세보기</h1>
           <div>
             <h5>#{id}</h5>
-            {clickedEditGame? <><input name="gameTitle" onChange={onChange} value={title}/></>:<h2>{title}</h2>}
+            {clickedEditGame ? (
+              <>
+                <input name="gameTitle" onChange={onChange} value={title} />
+              </>
+            ) : (
+              <h2>{title}</h2>
+            )}
           </div>
           <div>
             <button onClick={onDeleteClick}>게임 삭제</button>
-            <button onClick={onEditClick}>{clickedEditGame? "완료":"게임 편집"}</button>
+            <button onClick={onEditClick}>
+              {clickedEditGame ? "완료" : "게임 편집"}
+            </button>
             <button onClick={onResultClick}>결과 보기</button>
             <button onClick={onAddQuizClick}>퀴즈 추가</button>
           </div>
-          {isAddQuiz &&
-          <form onSubmit={onSubmit} style= {
-            {
-              display : "flex", flexDirection: "column", width: "200px",
-            }
-          }>
-            <input name="quizTitle" value={quizTitle} onChange={onChange} type="text" placeholder="퀴즈 이름" />
-            <input name="QuizL" value={QuizL} onChange={onChange} type="text" placeholder="왼쪽 지문" />
-            <input name="QuizR" value={QuizR} onChange={onChange} type="text" placeholder="오른쪽 지문" />
-            <input type="submit" value="추가" />
-          </form>
-          }
+          {isAddQuiz && (
+            <form
+              onSubmit={onSubmit}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                width: "200px",
+              }}
+            >
+              <input
+                name="quizTitle"
+                value={quizTitle}
+                onChange={onChange}
+                type="text"
+                placeholder="퀴즈 이름"
+              />
+              <input
+                name="QuizL"
+                value={QuizL}
+                onChange={onChange}
+                type="text"
+                placeholder="왼쪽 지문"
+              />
+              <input
+                name="QuizR"
+                value={QuizR}
+                onChange={onChange}
+                type="text"
+                placeholder="오른쪽 지문"
+              />
+              <input type="submit" value="추가" />
+            </form>
+          )}
           <div>
             <p>퀴즈 목록</p>
             <ul>
               {quizzes.map((quiz) => (
                 <>
-                  <Quiz id={quiz.id} key={quiz.id} title = {quiz.title}
-                    QuizL={quiz.QuizL} QuizLCount={quiz.QuizLCount}
-                    QuizR={quiz.QuizR}  QuizRCount={quiz.QuizRCount} clickedEditGame = {clickedEditGame} />
+                  <Quiz
+                    id={quiz.id}
+                    key={quiz.id}
+                    title={quiz.title}
+                    QuizL={quiz.QuizL}
+                    QuizLCount={quiz.QuizLCount}
+                    QuizR={quiz.QuizR}
+                    QuizRCount={quiz.QuizRCount}
+                    clickedEditGame={clickedEditGame}
+                  />
                 </>
               ))}
             </ul>
