@@ -4,6 +4,7 @@ import {
   Redirect,
   Route,
   Switch,
+  useHistory,
 } from "react-router-dom";
 import Home from "routes/Admin/Home";
 import GameList from "routes/Admin/GameList";
@@ -15,6 +16,7 @@ import Navigation from "components/Admin/Navigation";
 import GameStart from "routes/Client/GameStart";
 
 const AdminRouter = () => {
+  const history = useHistory();
   return (
     <Router basename="/admin">
       <Navigation />

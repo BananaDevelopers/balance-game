@@ -11,7 +11,6 @@ function Game({ id, title }) {
       </Link>
     </li>
   );
-  ````````;
 }
 
 export default Game;
