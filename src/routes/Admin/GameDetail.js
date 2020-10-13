@@ -44,25 +44,28 @@ const GameDetail = () => {
   useEffect(() => {
     setId(params.id);
     var gameRef = dbService.doc(`game/${params.id}`);
-    // if (gameRef) {
-    gameRef.onSnapshot((observer) => {
-      var game = observer.data();
-      setTitle(game.title);
-      setIsLoading(true);
-    });
-    // }
+    if (gameRef) {
+      gameRef.onSnapshot((observer) => {
+          var game = observer.data();
+          console.log(game) // 왜 undefined
+          if(game != undefined){
+            setTitle(game.title);
+            setIsLoading(true);
+          }
+      });
+    }
 
     return () => {};
   }, []);
 
   const onDeleteClick = async () => {
     const ok = window.confirm("Are you sure you want to delete this game?");
-    // if (ok) {
-    //   await dbService
-    //     .doc(`game/${id}`)
-    //     .delete()
-    //     .then(history.push("/gameList"));  // 게임리스트로 돌아가기가 안됌
-    // }
+    if (ok) {
+      await dbService
+        .doc(`game/${id}`)
+        .delete()
+        .then(() => {history.push("/gameList")});  // 게임리스트로 돌아가기가 안됌
+    }
   };
 
   const onEditClick = () => {
