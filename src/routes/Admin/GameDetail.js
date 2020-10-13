@@ -11,6 +11,33 @@ const GameDetail = () => {
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
   const [quizzes, setQuizzes] = useState([]);
+  const [isAddQuiz, setIsAddQuiz] = useState(false);
+
+  const [quizTitle, setQuizTitle] = useState("");
+  const [QuizL, setQuizL] = useState("");
+  const [QuizR, setQuizR] = useState("");
+  
+  const onChange = (event) => {
+
+    const {
+      target: {value},
+    } = event;
+
+    switch(event.target.name) {
+      case "quizTitle":
+        setQuizTitle(value);
+        break;
+      case "QuizL":
+        setQuizL(value);
+        break;
+      case "QuizR":
+        setQuizR(value);
+        break;
+      default:
+        break;
+    }
+
+  }
 
   useEffect(() => {
     setId(params.id);
@@ -28,8 +55,6 @@ const GameDetail = () => {
           }
       });
     }
-
-    return () => {};
   }, []);
 
   const findQuizById = (quizId) => {
@@ -70,6 +95,16 @@ const GameDetail = () => {
     history.push(`/results/${id}`);
   };
 
+  const onAddQuizClick = () => {
+    setIsAddQuiz(true);
+  }
+
+  const onSubmit = async(event) => {
+    event.preventDefault();
+    const con = await dbService.collection("game").get(id);
+    console.log(con);
+  }
+
   return (
     <div>
       {isLoading ? (
@@ -83,8 +118,20 @@ const GameDetail = () => {
             <button onClick={onDeleteClick}>게임 삭제</button>
             <button onClick={onEditClick}>{clickedEditGame? "완료":"게임 편집"}</button>
             <button onClick={onResultClick}>결과 보기</button>
-            <button>퀴즈 추가</button>
+            <button onClick={onAddQuizClick}>퀴즈 추가</button>
           </div>
+          {isAddQuiz &&
+          <form onSubmit={onSubmit} style= {
+            {
+              display : "flex", flexDirection: "column", width: "200px",
+            }
+          }>
+            <input name="quizTitle" value={quizTitle} onChange={onChange} type="text" placeholder="퀴즈 이름" />
+            <input name="QuizL" value={QuizL} onChange={onChange} type="text" placeholder="왼쪽 지문" />
+            <input name="QuizR" value={QuizR} onChange={onChange} type="text" placeholder="오른쪽 지문" />
+            <input type="submit" value="추가" />
+          </form>
+          }
           <div>
             <p>퀴즈 목록</p>
             <ul>
