@@ -47,7 +47,8 @@ const WriteComment = ({ dispatch, quizObj, propleft }) => {
     });
   };
 
-  const onSubmit = () => {
+  const onSubmit = (e) => {
+      e.preventDefault();
     const cmtObj = {
       description: comment,
       date: Date().toLocaleString(),
