@@ -1,13 +1,50 @@
-import React, { useState } from "react";
-import AdminRouter from "components/Admin/AdminRouter";
-import UserRouter from "components/Client/UserRouter";
+import React, { useState, useEffect } from "react";
+import AppRouter from "components/Router";
+import { authService } from "../fbase";
 
 function App() {
-  const [init, setInit] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userObj, setUserObj] = useState(null);
+
+  useEffect(() => {
+    authService.onAuthStateChanged((user) => {
+      if (user) {
+        setUserObj({
+          uid: user.uid
+        });
+        setIsAdmin(true);
+      } else {
+        setUserObj(null);
+      }
+    });
+    console.log(isAdmin);
+  }, [isAdmin]);
+
+  const refreshUser = () => {
+    const user = authService.currentUser;
+    setUserObj({
+      uid: user.uid,
+    });
+  };
+
+  const onClick = () => {
+    authService.signOut();
+    setIsAdmin(false);
+  };
+
   return (
     <>
-      {init ? <AdminRouter isLoggedIn={true} /> : <UserRouter />}
+      <AppRouter
+        isAdmin={Boolean(isAdmin)}
+        refreshUser={refreshUser}
+        userObj={userObj}
+      />
       <footer>&copy; Banana Dev {new Date().getFullYear()}</footer>
+      {isAdmin && (
+        <button onClick={onClick}>
+          <a href="/">Logout</a>
+        </button>
+      )}
     </>
   );
 }
