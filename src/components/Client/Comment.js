@@ -24,6 +24,7 @@ const Comment = ({ cmtObj, quizObj, dispatch }) => {
   const [pwtext, setPWtext] = useState("");
 
   const [nickname, setNickname] = useState("");
+  const [pw, setPW] = useState("");
   const [description, setDescription] = useState("");
   const [like, setLike] = useState();
   const [left, setLeft] = useState();
@@ -37,14 +38,26 @@ const Comment = ({ cmtObj, quizObj, dispatch }) => {
   );
 
   const delDB = async () => {
-    await dbService.doc(`comment/${cmtObj.docid}`).delete();
+    console.log(cmtObj);
+
+    const dbcmt = await dbService.doc(`comment/${cmtObj}`).get();
+    const dbreply = dbcmt.data().reply;
+    console.log(dbreply);
+
+    dbreply.map(async r => {
+      await dbService.doc(`replyComment/${r}`).delete();
+    });
+
+    await dbService.doc(`comment/${cmtObj}`).delete();
     await dbService.doc(`quiz/${quizObj.docid}`).update({
-      comments: quizObj.comments.filter(c => c.docid != cmtObj.docid)
+      comments: quizObj.comments.filter(c => c != cmtObj)
     });
   };
   const delClick = () => {
+    // const com = await dbService.doc(`comment/${cmtObj.docid}`).get()
+    // .then(res=>console.log(res))
     setDelFlag(true);
-    if (pwtext != cmtObj.password) {
+    if (pwtext != pw) {
       const error = window.confirm("wrong password");
       setPWtext("");
       return;
@@ -72,8 +85,9 @@ const Comment = ({ cmtObj, quizObj, dispatch }) => {
 
   const setComment = async () => {
     const cmt = await dbService.doc(`comment/${cmtObj}`).get();
-
+    //console.log(cmt);
     setNickname(cmt.data().nickname);
+    setPW(cmt.data().password);
     setDescription(cmt.data().description);
     setLike(cmt.data().like);
     setLeft(cmt.data().left);
