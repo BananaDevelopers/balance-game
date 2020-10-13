@@ -45,7 +45,7 @@ const GameList = () => {
       <div>
         <ul>
           {isLoading ? (
-            games.map((game) => <Game id={game.id} title={game.title} />)
+            games.map((game) => <Game id={game.id} key = {game.id} title={game.title} />)
           ) : (
             <p>Loading...</p>
           )}

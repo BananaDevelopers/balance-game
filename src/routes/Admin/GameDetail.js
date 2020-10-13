@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, Redirect, useHistory, useParams } from "react-router-dom";
 import { dbService } from "fbase";
+import Quiz from "components/Admin/Quiz";
 
 const GameDetail = () => {
   let params = useParams();
@@ -8,39 +9,7 @@ const GameDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
-  const [isAddQuiz, setIsAddQuiz] = useState(false);
-  const [quizzes, setQuizzes] = useState([
-    {
-      id: 1111,
-      title: "문제1입니당?",
-      QuizL: "왼쪽 문제요",
-      QuizR: "오른쪽 문제요",
-      QuizLCount: 75,
-      QuizRCount: 25,
-      comments: [],
-      date: "2020-12-05",
-    },
-    {
-      id: 2222,
-      title: "문제2입니당?",
-      QuizL: "왼쪽 문제요",
-      QuizR: "오른쪽 문제요",
-      QuizLCount: 50,
-      QuizRCount: 50,
-      comments: [],
-      date: "2020-12-05",
-    },
-    {
-      id: 3333,
-      title: "문제3입니당?",
-      QuizL: "왼쪽 문제요",
-      QuizR: "오른쪽 문제요",
-      QuizLCount: 60,
-      QuizRCount: 40,
-      comments: [],
-      date: "2020-12-05",
-    },
-  ]);
+  const [quizzes, setQuizzes] = useState([]);
 
   const [quizTitle, setQuizTitle] = useState("");
   const [QuizL, setQuizL] = useState("");
@@ -77,6 +46,9 @@ const GameDetail = () => {
           console.log(game) // 왜 undefined
           if(game != undefined){
             setTitle(game.title);
+            game.quizzes.map((quiz)=>
+              findQuizById(quiz)
+            )
             setIsLoading(true);
           }
       });
@@ -84,6 +56,21 @@ const GameDetail = () => {
 
     return () => {};
   }, []);
+
+  const findQuizById = (id) => {
+    dbService.collection("quiz").doc(id)
+    .get()
+    .then(function(doc) {
+        if (doc.exists) {
+            setQuizzes((prevQuizzes)=>[...prevQuizzes, doc.data()])
+            console.log("Document data:", doc.data());
+        } else {
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+  }
 
   const onDeleteClick = async () => {
     const ok = window.confirm("Are you sure you want to delete this game?");
@@ -144,16 +131,9 @@ const GameDetail = () => {
             <p>퀴즈 목록</p>
             <ul>
               {quizzes.map((quiz) => (
-                <li>
-                  <p>#{quiz.id}</p>
-                  <p>{quiz.title}</p>
-                  <p>
-                    {quiz.QuizL}({quiz.QuizLCount})
-                  </p>
-                  <p>
-                    {quiz.QuizR}({quiz.QuizRCount})
-                  </p>
-                </li>
+                <Quiz id = {quiz.id} key={quiz.id} title = {quiz.title}
+                 QuizL={quiz.QuizL} QuizLCount={quiz.QuizLCount}
+                 QuizR={quiz.QuizR}  QuizRCount={quiz.QuizRCount}/>
               ))}
             </ul>
           </div>
