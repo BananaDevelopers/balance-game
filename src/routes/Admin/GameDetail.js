@@ -15,7 +15,10 @@ const GameDetail = () => {
   const [quizTitle, setQuizTitle] = useState("");
   const [QuizL, setQuizL] = useState("");
   const [QuizR, setQuizR] = useState("");
-  
+  const [quizIDs, setQuizIDs] = useState([]);
+
+  const [first, setFirst] = useState(true);
+
   const onChange = (event) => {
 
     const {
@@ -35,34 +38,47 @@ const GameDetail = () => {
       default:
         break;
     }
-
   }
 
   useEffect(() => {
     setId(params.id);
-    var gameRef = dbService.doc(`game/${params.id}`);
+    let gameRef = dbService.doc(`game/${params.id}`);
     if (gameRef) {
       gameRef.onSnapshot((observer) => {
-          var game = observer.data();
-          console.log(game) // 왜 undefined
-          if(game != undefined){
-            setTitle(game.title);
-            game.quizzes.map((quiz)=>
-              findQuizById(quiz)
+        let game = observer.data();
+        console.log(game) // 왜 undefined
+        if(game !== undefined){
+          setTitle(game.title);
+          if (first) {
+            game.quizzes.map((quizId)=>
+              setQuizIDs((prevQuizIDs) => [...prevQuizIDs, quizId])
             )
-            setIsLoading(true);
+            setFirst(false);
           }
+          game.quizzes.map((quizId)=>
+            findQuizById(quizId)
+          )
+        
+          setIsLoading(true);
+        }
       });
     }
+
+    return () => {};
   }, []);
 
-  const findQuizById = (id) => {
-    dbService.collection("quiz").doc(id)
+  const findQuizById = (quizId) => {
+    dbService.collection("quiz").doc(quizId)
     .get()
     .then(function(doc) {
         if (doc.exists) {
-            setQuizzes((prevQuizzes)=>[...prevQuizzes, doc.data()])
-            console.log("Document data:", doc.data());
+          const quizObj = {
+            id: quizId,
+            ...doc.data()
+          }
+          setQuizzes((prevQuizzes)=>[...prevQuizzes, quizObj])
+          
+          console.log("Document data:", quizObj);
         } else {
             console.log("No such document!");
         }
@@ -95,8 +111,37 @@ const GameDetail = () => {
 
   const onSubmit = async(event) => {
     event.preventDefault();
-    const con = await dbService.collection("game").get(id);
-    console.log(con);
+
+    let quizObj = {
+      title: quizTitle,
+      QuizL: QuizL,
+      QuizR: QuizR,
+      QuizLCount: 0,
+      QuizRCount: 0,
+      comments: [],
+      date: Date.now(),
+    };
+
+    let quizID;
+
+    await dbService.collection("quiz").add(quizObj).then((docRef)=>(
+      quizObj = {
+        id: docRef.id,
+        ...quizObj,
+      }
+    ));
+
+    console.log(quizObj);
+
+    setQuizzes((prevQuizzes)=>[...prevQuizzes, quizObj]);
+    setQuizIDs((prevQuizIDs) => [...prevQuizIDs, quizObj.id]);
+
+    console.log(quizIDs);
+    
+    await dbService.doc(`game/${id}`).update({
+      quizzes: quizIDs,
+    })
+
   }
 
   return (
