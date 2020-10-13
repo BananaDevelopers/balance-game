@@ -3,7 +3,6 @@ import AppRouter from "components/Router";
 import { authService } from "../fbase";
 
 function App() {
-<<<<<<< HEAD
   const [isAdmin, setIsAdmin] = useState(false);
   const [userObj, setUserObj] = useState(null);
 
@@ -40,12 +39,6 @@ function App() {
         refreshUser={refreshUser}
         userObj={userObj}
       />
-=======
-  const [init, setInit] = useState(true);
-  return (
-    <>
-      {init ? <AdminRouter isLoggedIn={true} /> : <UserRouter />}
->>>>>>> 8d287472a6747a7cfd139590f907fd9b732614cf
       <footer>&copy; Banana Dev {new Date().getFullYear()}</footer>
       {isAdmin && (
         <button onClick={onClick}>

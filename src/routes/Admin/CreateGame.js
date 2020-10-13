@@ -3,11 +3,6 @@ import { dbService } from "fbase";
 import { useHistory } from "react-router-dom";
 
 const CreateGame = () => {
-<<<<<<< HEAD
-  const [user, setUser] = useState("");
-
-  return <></>;
-=======
   const history = useHistory();
 
   const [gameTitle, setGameTitle] = useState("");
@@ -135,7 +130,6 @@ const CreateGame = () => {
     </>
   );
 
->>>>>>> 8d287472a6747a7cfd139590f907fd9b732614cf
 };
 
 export default CreateGame;
