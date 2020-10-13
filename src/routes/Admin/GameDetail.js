@@ -7,6 +7,7 @@ const GameDetail = () => {
   let params = useParams();
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
+  const [clickedEditGame, setClickedEditGame] = useState(false);
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
   const [quizzes, setQuizzes] = useState([]);
@@ -47,8 +48,8 @@ const GameDetail = () => {
           console.log(game) // 왜 undefined
           if(game != undefined){
             setTitle(game.title);
-            game.quizzes.map((quiz)=>
-              findQuizById(quiz)
+            game.quizzes.map((quizId)=>
+              findQuizById(quizId)
             )
             setIsLoading(true);
           }
@@ -56,13 +57,17 @@ const GameDetail = () => {
     }
   }, []);
 
-  const findQuizById = (id) => {
-    dbService.collection("quiz").doc(id)
+  const findQuizById = (quizId) => {
+    dbService.collection("quiz").doc(quizId)
     .get()
     .then(function(doc) {
         if (doc.exists) {
-            setQuizzes((prevQuizzes)=>[...prevQuizzes, doc.data()])
-            console.log("Document data:", doc.data());
+            const quizObj = {
+              id: quizId,
+              ...doc.data()
+            }
+            setQuizzes((prevQuizzes)=>[...prevQuizzes, quizObj])
+            console.log("Document data:", quizObj);
         } else {
             console.log("No such document!");
         }
@@ -82,7 +87,8 @@ const GameDetail = () => {
   };
 
   const onEditClick = () => {
-    history.push(`/editGame/${id}`);
+    // history.push(`/editGame/${id}`);
+    setClickedEditGame(!clickedEditGame)
   };
 
   const onResultClick = () => {
@@ -110,7 +116,7 @@ const GameDetail = () => {
           </div>
           <div>
             <button onClick={onDeleteClick}>게임 삭제</button>
-            <button onClick={onEditClick}>게임 편집</button>
+            <button onClick={onEditClick}>{clickedEditGame? "완료":"게임 편집"}</button>
             <button onClick={onResultClick}>결과 보기</button>
             <button onClick={onAddQuizClick}>퀴즈 추가</button>
           </div>
@@ -130,9 +136,11 @@ const GameDetail = () => {
             <p>퀴즈 목록</p>
             <ul>
               {quizzes.map((quiz) => (
-                <Quiz id = {quiz.id} key={quiz.id} title = {quiz.title}
-                 QuizL={quiz.QuizL} QuizLCount={quiz.QuizLCount}
-                 QuizR={quiz.QuizR}  QuizRCount={quiz.QuizRCount}/>
+                <>
+                  <Quiz id={quiz.id} key={quiz.id} title = {quiz.title}
+                    QuizL={quiz.QuizL} QuizLCount={quiz.QuizLCount}
+                    QuizR={quiz.QuizR}  QuizRCount={quiz.QuizRCount} clickedEditGame = {clickedEditGame} />
+                </>
               ))}
             </ul>
           </div>
