@@ -154,6 +154,12 @@ const GameDetail = () => {
     await dbService.doc(`game/${id}`).update({
       quizzes: firebaseInstance.firestore.FieldValue.arrayUnion(newId)
     });
+
+    setIsAddQuiz(false);
+    setQuizTitle("");
+    setQuizL("");
+    setQuizR("");
+
   };
 
   return (
