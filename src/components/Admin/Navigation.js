@@ -15,10 +15,7 @@ const Navigation = () => {
           <Link to="/gameList">게임 목록</Link>
         </li>
         <li>
-          <Link to="/gameDetail">gameDetail (temp)</Link>
-        </li>
-        <li>
-          <Link to="/editGame">editGame (temp)</Link>
+          <Link to="/suggestionList">제안 목록</Link>
         </li>
       </ul>
     </nav>

@@ -43,17 +43,17 @@ const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, clickedEditGam
         } = event;
     
         switch(event.target.name) {
-          case "gameTitle":
-            setGameTitle(value);
-            break;
-        case "gameQuizL":
-            setGameQuizL(value);
-            break;
-        case "gameQuizR":
-            setGameQuizR(value);
-            break;
-          default:
-            break;
+            case "gameTitle":
+                setGameTitle(value);
+                break;
+            case "gameQuizL":
+                setGameQuizL(value);
+                break;
+            case "gameQuizR":
+                setGameQuizR(value);
+                break;
+            default:
+                break;
         }
       }
     
@@ -61,7 +61,7 @@ const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, clickedEditGam
     return(
         <li>
             <p>#{id}</p>
-            {isEditing? <>
+            {isEditing && clickedEditGame? <>
                 <p><input name="gameTitle" type="text" onChange={onChange} value={gameTitle} placeholder="퀴즈 제목"/></p>
                 <p><input name="gameQuizL" value={gameQuizL} onChange={onChange} type="text" placeholder="왼쪽 지문" /></p>
                 <p><input name="gameQuizR" value={gameQuizR} onChange={onChange} type="text" placeholder="오른쪽 지문" /></p>
@@ -70,7 +70,7 @@ const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, clickedEditGam
             <p>{gameQuizL}({QuizLCount})</p>
             <p>{gameQuizR}({QuizRCount})</p>
             </>}
-            {clickedEditGame? 
+            {clickedEditGame && clickedEditGame? 
             <><button onClick={onEditClick}>{isEditing? "완료":"편집"}</button><button onClick={onDeleteClick}>삭제</button></>:<></>}
         </li>
     )

@@ -13,6 +13,7 @@ import Results from "routes/Admin/Results";
 import EditGame from "routes/Admin/EditGame";
 import Navigation from "components/Admin/Navigation";
 import GameStart from "routes/Client/GameStart";
+import SuggestionList from "routes/Admin/SuggestionList";
 
 const AdminRouter = () => {
   return (
@@ -27,6 +28,9 @@ const AdminRouter = () => {
         </Route>
         <Route exact path="/gameList">
           <GameList />
+        </Route>
+        <Route exact path="/suggestionList">
+          <SuggestionList />
         </Route>
         <Route exact path="/gameDetail/:id">
           <GameDetail />

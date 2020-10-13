@@ -24,6 +24,9 @@ const GameDetail = () => {
     } = event;
 
     switch(event.target.name) {
+      case "gameTitle":
+        setTitle(value)
+        break;
       case "quizTitle":
         setQuizTitle(value);
         break;
@@ -89,6 +92,20 @@ const GameDetail = () => {
   const onEditClick = () => {
     // history.push(`/editGame/${id}`);
     setClickedEditGame(!clickedEditGame)
+    if(clickedEditGame){
+      // 완료 버튼 클릭시
+      // 바뀐 title로 game 업데이트
+      dbService.collection("game").doc(id).update({
+          title: title,
+      })
+      .then(function() {
+          console.log("Document successfully updated!");
+      })
+      .catch(function(error) {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+      });
+    }
   };
 
   const onResultClick = () => {
@@ -112,7 +129,7 @@ const GameDetail = () => {
           <h1>게임 상세보기</h1>
           <div>
             <h5>#{id}</h5>
-            <h2>{title}</h2>
+            {clickedEditGame? <><input name="gameTitle" onChange={onChange} value={title}/></>:<h2>{title}</h2>}
           </div>
           <div>
             <button onClick={onDeleteClick}>게임 삭제</button>
