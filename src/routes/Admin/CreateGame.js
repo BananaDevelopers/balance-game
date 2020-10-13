@@ -50,7 +50,7 @@ const CreateGame = () => {
         }
         break;
       case "addGame":
-        if (quizCount < 5) {
+        if (quizCount < 2) {
           alert("문제 더!");
         }
         else {
