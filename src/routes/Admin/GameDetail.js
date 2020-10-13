@@ -10,6 +10,7 @@ const GameDetail = () => {
   const [id, setId] = useState("");
   const [title, setTitle] = useState("");
   const [quizzes, setQuizzes] = useState([]);
+  const [isAddQuiz, setIsAddQuiz] = useState(false);
 
   const [quizTitle, setQuizTitle] = useState("");
   const [QuizL, setQuizL] = useState("");
