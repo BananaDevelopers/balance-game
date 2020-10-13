@@ -3,35 +3,40 @@ import Game from "components/Admin/Game";
 import { dbService } from "fbase";
 
 const GameList = () => {
-  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [games, setGames] = useState([]);
-  const [searchList, setSearchList] = useState([])
+  const [searchList, setSearchList] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    dbService.collection("game").onSnapshot((snapshot) => {
+    dbService.collection("game").get().then((snapshot) => {
+      // init games
       const gameArray = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
       setGames(gameArray);
-      setSearchList(gameArray)
+      setSearchList(gameArray);
       setIsLoading(true);
-    });
+    })
   }, []);
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    if(search == ""){
-      setSearchList(games)
-    }else{
-      setSearchList([])
-      games.map((game)=>{
-        if(game.title.includes(search)){
-          setSearchList((prevList) => [...prevList, game])
+  const onSearchClick = () => {
+    if (search == "") {
+      alert("비어있음");
+    } else {
+      setSearchList([]);
+      games.map((game) => {
+        if (game.title.includes(search)) {
+          setSearchList((prevList) => [...prevList, game]);
         }
-      })
+      });
     }
+  };
+
+  const onShowAllGame = () => {
+    setSearch("");
+    setSearchList(games);
   };
 
   const onChange = (e) => {
@@ -44,7 +49,7 @@ const GameList = () => {
   return (
     <div>
       <h1>게임리스트</h1>
-      <form onSubmit={onSubmit}>
+      <div>
         <input
           type="text"
           placeholder="게임 제목을 입력하세요"
@@ -52,12 +57,15 @@ const GameList = () => {
           required
           onChange={onChange}
         />
-        <input type="submit" value="검색" />
-      </form>
+        <button onClick={onSearchClick}>검색</button>
+        <button onClick={onShowAllGame}>전체보기</button>
+      </div>
       <div>
         <ul>
           {isLoading ? (
-            searchList.map((game) => <Game id={game.id} key = {game.id} title={game.title} />)
+            searchList.map((game) => (
+              <Game id={game.id} key={game.id} title={game.title} />
+            ))
           ) : (
             <p>Loading...</p>
           )}

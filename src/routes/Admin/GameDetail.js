@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, Redirect, useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { dbService, firebaseInstance } from "fbase";
 import Quiz from "components/Admin/Quiz";
 
@@ -7,8 +7,9 @@ const GameDetail = () => {
   let params = useParams();
   const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
-  const [clickedEditGame, setClickedEditGame] = useState(false);
-  const [id, setId] = useState("");
+  const [editingGame, setEditingGame] = useState(false);
+
+  const [gameId, setGameId] = useState("");
   const [title, setTitle] = useState("");
   const [quizzes, setQuizzes] = useState([]);
   const [isAddQuiz, setIsAddQuiz] = useState(false);
@@ -16,7 +17,20 @@ const GameDetail = () => {
   const [quizTitle, setQuizTitle] = useState("");
   const [QuizL, setQuizL] = useState("");
   const [QuizR, setQuizR] = useState("");
-  const [quizIDs, setQuizIDs] = useState([]);
+  
+  useEffect(() => {
+    setGameId(params.id);
+    let gameRef = dbService.collection("game").doc(params.id); 
+    gameRef.onSnapshot((doc)=>{
+      if(doc.exists){
+        let gameObj = doc.data()
+        setTitle(gameObj.title)
+        setQuizzes([]);
+        gameObj.quizzes.map((quizId) => findQuizById(quizId));
+        setIsLoading(true);
+      }
+    })
+  }, []);
 
   const onChange = (event) => {
     const {
@@ -41,26 +55,6 @@ const GameDetail = () => {
     }
   };
 
-  useEffect(() => {
-    setId(params.id);
-    let gameRef = dbService.doc(`game/${params.id}`);
-    if (gameRef) {
-      gameRef.onSnapshot((observer) => {
-        let game = observer.data();
-        // console.log(game) // 왜 undefined
-        if (game !== undefined) {
-          setTitle(game.title);
-          setQuizzes([]);
-          setQuizIDs([]);
-          game.quizzes.map((quizId) => findQuizById(quizId));
-          setIsLoading(true);
-        }
-      });
-    }
-
-    return () => {};
-  }, []);
-
   const findQuizById = (quizId) => {
     dbService
       .collection("quiz")
@@ -73,7 +67,6 @@ const GameDetail = () => {
             ...doc.data(),
           };
           setQuizzes((prevQuizzes) => [...prevQuizzes, quizObj]);
-          setQuizIDs((prevQuizIDs) => [...prevQuizIDs, quizId]);
           console.log("Document data:", quizObj);
         } else {
           console.log("No such document!");
@@ -88,23 +81,20 @@ const GameDetail = () => {
     const ok = window.confirm("Are you sure you want to delete this game?");
     if (ok) {
       await dbService
-        .doc(`game/${id}`)
+        .collection("game")
+        .doc(gameId)
         .delete()
         .then(() => {
           history.push("/gameList");
-        }); // 게임리스트로 돌아가기가 안됌
+        }); 
     }
   };
 
   const onEditClick = () => {
-    // history.push(`/editGame/${id}`);
-    setClickedEditGame(!clickedEditGame);
-    if (clickedEditGame) {
-      // 완료 버튼 클릭시
-      // 바뀐 title로 game 업데이트
+    if (editingGame) {
       dbService
         .collection("game")
-        .doc(id)
+        .doc(gameId)
         .update({
           title: title,
         })
@@ -116,10 +106,11 @@ const GameDetail = () => {
           console.error("Error updating document: ", error);
         });
     }
+    setEditingGame(!editingGame);
   };
 
   const onResultClick = () => {
-    history.push(`/results/${id}`);
+    history.push(`/results/${gameId}`);
   };
 
   const onAddQuizClick = () => {
@@ -150,36 +141,41 @@ const GameDetail = () => {
 
     const newId = quizObj.id;
 
-    await dbService.doc(`game/${id}`).update({
+    await dbService.collection("game").doc(gameId).update({
       quizzes: firebaseInstance.firestore.FieldValue.arrayUnion(newId),
     });
 
+    initAddQuizForm()
+  };
+
+  const initAddQuizForm = () => {
     setIsAddQuiz(false);
     setQuizTitle("");
     setQuizL("");
     setQuizR("");
-  };
+  }
 
   return (
     <div>
+      <h1>게임 상세보기</h1>
+      <h5>#{gameId}</h5>
       {isLoading ? (
         <>
-          <h1>게임 상세보기</h1>
           <div>
-            <h5>#{id}</h5>
-            {clickedEditGame ? (
+            {editingGame ? (
               <>
                 <input name="gameTitle" onChange={onChange} value={title} />
               </>
             ) : (
               <h2>{title}</h2>
             )}
+            <button onClick={onEditClick}>
+              {editingGame ? "완료" : "제목 편집"}
+            </button>
           </div>
+          <br/>
           <div>
             <button onClick={onDeleteClick}>게임 삭제</button>
-            <button onClick={onEditClick}>
-              {clickedEditGame ? "완료" : "게임 편집"}
-            </button>
             <button onClick={onResultClick}>결과 보기</button>
             <button onClick={onAddQuizClick}>퀴즈 추가</button>
           </div>
@@ -229,7 +225,7 @@ const GameDetail = () => {
                     QuizLCount={quiz.QuizLCount}
                     QuizR={quiz.QuizR}
                     QuizRCount={quiz.QuizRCount}
-                    gameId={id}
+                    gameId={gameId}
                   />
                 </>
               ))}
