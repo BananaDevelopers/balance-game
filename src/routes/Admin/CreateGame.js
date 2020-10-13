@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 
 const CreateGame = () => {
+  const [user, setUser] = useState("");
 
-  const [user, setUser] = useState("")
-
-  return (
-    <>
-    </>
-  )
-
-
+  return <></>;
 };
 
 export default CreateGame;

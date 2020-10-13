@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { dbService } from "fbase";
-import SuggestionPage from "routes/Client/SuggestionPage";
 
 function Suggest({ SuggestionObj }) {
   const [quizName, setQuizName] = useState("");
