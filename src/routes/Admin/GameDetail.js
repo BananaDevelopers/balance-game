@@ -138,7 +138,6 @@ const GameDetail = () => {
       date: Date.now(),
     };
 
-
     await dbService.collection("quiz").add(quizObj).then((docRef)=>(
       quizObj = {
         id: docRef.id,
