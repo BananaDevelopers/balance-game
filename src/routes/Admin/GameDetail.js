@@ -54,8 +54,6 @@ const GameDetail = () => {
           }
       });
     }
-
-    return () => {};
   }, []);
 
   const findQuizById = (id) => {
