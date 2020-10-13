@@ -1,7 +1,7 @@
-import { dbService } from 'fbase';
+import { dbService, firebaseInstance } from 'fbase';
 import React, {useState} from 'react'
 
-const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, clickedEditGame}) => {
+const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, gameId}) => {
     const [isEditing, setIsEditing] = useState(false)
     const [gameTitle, setGameTitle] = useState(title)
     const [gameQuizL, setGameQuizL] = useState(QuizL)
@@ -29,12 +29,17 @@ const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, clickedEditGam
     const onDeleteClick = async() => {
         const ok = window.confirm("Are you sure you want to delete this quiz?");
         if (ok) {
+            // quiz collection에서 삭제
             await dbService
                 .doc(`quiz/${id}`)
                 .delete()
                 .then(() => {console.log("삭제함")});
+
+            // game 배열에서도 id 삭제
+            await dbService.doc(`game/${gameId}`).update({
+                quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(id),
+              });
         }
-        // TODO 해당 게임의 퀴즈 리스트에서 id삭제 해야함
     }
 
     const onChange = (event) => {
@@ -61,7 +66,7 @@ const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, clickedEditGam
     return(
         <li>
             <p>#{id}</p>
-            {isEditing && clickedEditGame? <>
+            {isEditing? <>
                 <p><input name="gameTitle" type="text" onChange={onChange} value={gameTitle} placeholder="퀴즈 제목"/></p>
                 <p><input name="gameQuizL" value={gameQuizL} onChange={onChange} type="text" placeholder="왼쪽 지문" /></p>
                 <p><input name="gameQuizR" value={gameQuizR} onChange={onChange} type="text" placeholder="오른쪽 지문" /></p>
@@ -70,8 +75,7 @@ const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, clickedEditGam
             <p>{gameQuizL}({QuizLCount})</p>
             <p>{gameQuizR}({QuizRCount})</p>
             </>}
-            {clickedEditGame && clickedEditGame? 
-            <><button onClick={onEditClick}>{isEditing? "완료":"편집"}</button><button onClick={onDeleteClick}>삭제</button></>:<></>}
+            <button onClick={onEditClick}>{isEditing? "완료":"편집"}</button><button onClick={onDeleteClick}>삭제</button>
         </li>
     )
 }

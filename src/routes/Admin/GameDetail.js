@@ -50,6 +50,8 @@ const GameDetail = () => {
         // console.log(game) // 왜 undefined
         if (game !== undefined) {
           setTitle(game.title);
+          setQuizzes([]);
+          setQuizIDs([]);
           game.quizzes.map((quizId) => findQuizById(quizId));
           setIsLoading(true);
         }
@@ -60,8 +62,6 @@ const GameDetail = () => {
   }, []);
 
   const findQuizById = (quizId) => {
-    setQuizzes([])
-    setQuizIDs([])
     dbService
       .collection("quiz")
       .doc(quizId)
@@ -72,8 +72,8 @@ const GameDetail = () => {
             id: quizId,
             ...doc.data(),
           };
-            setQuizzes((prevQuizzes) => [...prevQuizzes, quizObj]);
-            setQuizIDs((prevQuizIDs) => [...prevQuizIDs, quizId]);
+          setQuizzes((prevQuizzes) => [...prevQuizzes, quizObj]);
+          setQuizIDs((prevQuizIDs) => [...prevQuizIDs, quizId]);
           console.log("Document data:", quizObj);
         } else {
           console.log("No such document!");
@@ -82,7 +82,6 @@ const GameDetail = () => {
       .catch(function (error) {
         console.log("Error getting document:", error);
       });
-
   };
 
   const onDeleteClick = async () => {
@@ -152,14 +151,13 @@ const GameDetail = () => {
     const newId = quizObj.id;
 
     await dbService.doc(`game/${id}`).update({
-      quizzes: firebaseInstance.firestore.FieldValue.arrayUnion(newId)
+      quizzes: firebaseInstance.firestore.FieldValue.arrayUnion(newId),
     });
 
     setIsAddQuiz(false);
     setQuizTitle("");
     setQuizL("");
     setQuizR("");
-
   };
 
   return (
@@ -231,7 +229,7 @@ const GameDetail = () => {
                     QuizLCount={quiz.QuizLCount}
                     QuizR={quiz.QuizR}
                     QuizRCount={quiz.QuizRCount}
-                    clickedEditGame={clickedEditGame}
+                    gameId={id}
                   />
                 </>
               ))}

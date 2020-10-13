@@ -10,6 +10,7 @@ import GameStart from "routes/Client/GameStart";
 import Navigation from "components/Navigation";
 import Gaming from "routes/Client/Gaming";
 import GameResult from "routes/Client/GameResult";
+import SuggestionList from "routes/Admin/SuggestionList";
 
 const AppRouter = ({ isAdmin, refreshUser, userObj }) => {
   return (
@@ -23,6 +24,7 @@ const AppRouter = ({ isAdmin, refreshUser, userObj }) => {
             <Route exact path="/gameDetail/:id" component={GameDetail} />
             <Route exact path="/editGame/:id" component={EditGame} />
             <Route exact path="/results/:id" component={Results} />
+            <Route exact path="/suggestionList" component={SuggestionList} />
           </>
         ) : (
           <>

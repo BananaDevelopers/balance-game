@@ -6,6 +6,7 @@ const GameList = () => {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [games, setGames] = useState([]);
+  const [searchList, setSearchList] = useState([])
 
   useEffect(() => {
     dbService.collection("game").onSnapshot((snapshot) => {
@@ -14,12 +15,23 @@ const GameList = () => {
         ...doc.data(),
       }));
       setGames(gameArray);
+      setSearchList(gameArray)
       setIsLoading(true);
     });
   }, []);
 
   const onSubmit = (e) => {
     e.preventDefault();
+    if(search == ""){
+      setSearchList(games)
+    }else{
+      setSearchList([])
+      games.map((game)=>{
+        if(game.title.includes(search)){
+          setSearchList((prevList) => [...prevList, game])
+        }
+      })
+    }
   };
 
   const onChange = (e) => {
@@ -45,7 +57,7 @@ const GameList = () => {
       <div>
         <ul>
           {isLoading ? (
-            games.map((game) => <Game id={game.id} key = {game.id} title={game.title} />)
+            searchList.map((game) => <Game id={game.id} key = {game.id} title={game.title} />)
           ) : (
             <p>Loading...</p>
           )}
