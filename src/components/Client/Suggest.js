@@ -6,15 +6,18 @@ function Suggest({ SuggestionObj }) {
   const [quizL, setQuizL] = useState("");
   const [quizR, setQuizR] = useState("");
   const [editing, setEditing] = useState(false);
+
   const onDeleteClick = async () => {
     const ok = window.confirm("Are you sure?");
     if (ok) {
       await dbService.doc(`Suggestions/${SuggestionObj.id}`).delete();
     }
   };
+
   const toggleEditing = () => {
     setEditing((prev) => !prev);
   };
+
   const onSubmit = async (event) => {
     event.preventDefault();
     await dbService
@@ -22,6 +25,7 @@ function Suggest({ SuggestionObj }) {
       .update({ quizName, quizL, quizR });
     setEditing(false);
   };
+
   const onChange = (event) => {
     const {
       target: { name, value },
@@ -34,6 +38,7 @@ function Suggest({ SuggestionObj }) {
       setQuizR(value);
     }
   };
+  
   return (
     <div>
       {editing ? (
