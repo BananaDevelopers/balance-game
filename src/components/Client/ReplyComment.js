@@ -39,6 +39,8 @@ const ReplyComment = ({ cmtObj }) => {
       case "comment":
         setComment(value);
         break;
+      default:
+        break;
     }
   };
 

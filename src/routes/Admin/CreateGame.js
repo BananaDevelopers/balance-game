@@ -11,7 +11,7 @@ const CreateGame = () => {
   const [quizTitle, setQuizTitle] = useState("");
   const [QuizL, setQuizL] = useState("");
   const [QuizR, setQuizR] = useState("");
-  const [quizIdArray, setQuizIdArray] = useState([]);
+  const [quizRefArray, setQuizRefArray] = useState([]);
   const [quizArray, setQuizArray] = useState([]);
   
   const [quizCount, setQuizCount] = useState(0);
@@ -38,14 +38,10 @@ const CreateGame = () => {
           await dbService
             .collection("quiz")
             .add(quizObj)
-            .then((docRef) => setQuizIdArray([...quizIdArray, docRef.id]));
+            .then((docRef) => {
+              setQuizRefArray([...quizRefArray, docRef])
+            }); // ref 추가로 변경
           setQuizArray([...quizArray, quizObj]);
-
-          console.log("quizIdArray")
-          console.log(quizIdArray)
-          console.log("quizArray")
-          console.log(quizArray)
-
           setQuizCount(quizCount + 1);
           initAddQuizForm();
         } else {
@@ -70,7 +66,7 @@ const CreateGame = () => {
     } else {
       const gameObj = {
         title: gameTitle,
-        quizzes: quizIdArray,
+        quizzes: quizRefArray,
         results: [],
         date: Date.now(),
       };
@@ -106,9 +102,9 @@ const CreateGame = () => {
     }
   };
 
-  const QuizList = ({ key, title, QuizL, QuizR }) => {
+  const QuizList = ({ title, QuizL, QuizR }) => {
     return (
-      <h5 key={key}>
+      <h5>
         {title} ? {QuizL} VS {QuizR}
       </h5>
     );
