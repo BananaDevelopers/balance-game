@@ -1,19 +1,11 @@
 import { dbService, firebaseInstance } from "fbase";
 import React, { useState } from "react";
 
-<<<<<<< HEAD
-const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, gameId}) => {
-    const [isEditing, setIsEditing] = useState(false)
-    const [gameTitle, setGameTitle] = useState(title)
-    const [gameQuizL, setGameQuizL] = useState(QuizL)
-    const [gameQuizR, setGameQuizR] = useState(QuizR)
-=======
 const Quiz = ({ id, title, QuizL, QuizLCount, QuizR, QuizRCount, gameId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [gameTitle, setGameTitle] = useState(title);
   const [gameQuizL, setGameQuizL] = useState(QuizL);
   const [gameQuizR, setGameQuizR] = useState(QuizR);
->>>>>>> bc7aec5ac568c9f36e61652dcc55bbf92c550d03
 
   const onEditClick = () => {
     if (isEditing) {
