@@ -40,22 +40,10 @@ const Quiz = ({ id, title, QuizL, QuizLCount, QuizR, QuizRCount, gameId }) => {
           console.log("삭제함");
         });
 
-<<<<<<< HEAD
-            // game 배열에서도 id 삭제
-            await dbService.collection("game").doc(gameId).update({
-                quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(id),
-            });
-            // ref 삭제는 안됨 (ref 넘겨줌)
-            // await dbService.collection("game").doc(gameId).update({
-            //     quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(`game/${id}`),
-            //   });
-        }
-=======
       // game 배열에서도 id 삭제
       await dbService.doc(`game/${gameId}`).update({
         quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(id),
       });
->>>>>>> bc7aec5ac568c9f36e61652dcc55bbf92c550d03
     }
   };
 
