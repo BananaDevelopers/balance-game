@@ -1,11 +1,13 @@
 import { dbService, firebaseInstance } from "fbase";
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
-const Quiz = ({ id, title, QuizL, QuizLCount, QuizR, QuizRCount, gameId }) => {
+const Quiz = ({ id, quizRef, title, QuizL, QuizLCount, QuizR, QuizRCount, gameId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [gameTitle, setGameTitle] = useState(title);
   const [gameQuizL, setGameQuizL] = useState(QuizL);
   const [gameQuizR, setGameQuizR] = useState(QuizR);
+  const history = useHistory();
 
   const onEditClick = () => {
     if (isEditing) {
@@ -32,24 +34,75 @@ const Quiz = ({ id, title, QuizL, QuizLCount, QuizR, QuizRCount, gameId }) => {
   const onDeleteClick = async () => {
     const ok = window.confirm("Are you sure you want to delete this quiz?");
     if (ok) {
-      // quiz collection에서 삭제
-      await dbService
-        .doc(`quiz/${id}`)
-        .delete()
-        .then(() => {
-          console.log("삭제함");
-        });
+      // game에서 ref 삭제
+      await dbService.collection("game").doc(gameId).update({
+          quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(quizRef),
+      });
 
-        // game 배열에서도 id 삭제
-        await dbService.collection("game").doc(gameId).update({
-            quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(id),
+      // 해당 퀴즈 삭제
+      await dbService
+        .collection('quiz')
+        .doc(id)
+        .get()
+        .then((quizDoc) => {
+          if(quizDoc.exists){
+            const commentIds = quizDoc.data().comments;
+            // 퀴즈에 해당하는 댓글 삭제(comments 배열의 모든 아이디)
+            deleteComments(commentIds)
+          }
+  
+          // 해당 퀴즈 삭제
+          dbService.collection('quiz').doc(id)
+                  .delete()
+                  .then((quizDoc)=>{
+                    console.log("quiz"+quizDoc.id+" 삭제");
+                  }).catch(function(error) {
+                    console.error("Error removing document: ", error);
+                  });
         });
-        // ref 삭제는 안됨 (ref 넘겨줌)
-        // await dbService.collection("game").doc(gameId).update({
-        //     quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(`game/${id}`),
-        //   });
     }
   };
+
+  const deleteComments = (commentIds) => {
+    if(commentIds.length > 0){
+      commentIds.map((cid)=>{
+        dbService.collection("comment")
+        .doc(cid).get().then((commentDoc)=>{
+          if(commentDoc.exists){
+            const replyIds = commentDoc.data().reply;
+            // 대댓글 삭제(reply 배열의 모든 아이디)
+            deleteReplyComments(replyIds);
+
+            // 해당 댓글 삭제
+            dbService.collection("comment")
+                    .doc(cid)
+                    .delete()
+                    .then(()=>{
+                      console.log("comment"+cid+" 삭제");
+                    }).catch(function(error) {
+                      console.error("Error removing document: ", error);
+                    });;
+          }
+        })
+
+      })
+    }
+  }
+  
+  const deleteReplyComments = (replyIds) => {
+    if(replyIds.length > 0){
+      replyIds.map((rid)=>{
+        dbService.collection("replyComment")
+                  .doc(rid)
+                  .delete()
+                  .then(()=>{
+                    console.log("replyComment"+rid+" 삭제");
+                  }).catch(function(error) {
+                    console.error("Error removing document: ", error);
+                  });
+      });
+    }
+  }
 
   const onChange = (event) => {
     const {
@@ -70,6 +123,10 @@ const Quiz = ({ id, title, QuizL, QuizLCount, QuizR, QuizRCount, gameId }) => {
         break;
     }
   };
+
+  const onViewCommentClick = () => {
+    history.push("/gameList");
+  }
 
   return (
     <li>
@@ -117,6 +174,7 @@ const Quiz = ({ id, title, QuizL, QuizLCount, QuizR, QuizRCount, gameId }) => {
       )}
       <button onClick={onEditClick}>{isEditing ? "완료" : "편집"}</button>
       <button onClick={onDeleteClick}>삭제</button>
+      <button onClick={onViewCommentClick}>댓글보기</button>
     </li>
   );
 };

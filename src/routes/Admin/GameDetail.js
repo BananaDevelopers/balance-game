@@ -63,6 +63,7 @@ const GameDetail = () => {
         if (doc.exists) {
           const quizObj = {
             id: quizRef.id,
+            ref: quizRef,
             ...doc.data(),
           };
           setQuizzes((prevQuizzes) => [...prevQuizzes, quizObj]);
@@ -289,6 +290,7 @@ const GameDetail = () => {
                 <>
                   <Quiz
                     id={quiz.id}
+                    quizRef={quiz.ref}
                     key={quiz.id}
                     title={quiz.title}
                     QuizL={quiz.QuizL}
@@ -296,7 +298,6 @@ const GameDetail = () => {
                     QuizR={quiz.QuizR}
                     QuizRCount={quiz.QuizRCount}
                     gameId={gameId}
-                    gameRef={quiz.ref}
                   />
                 </>
               ))}
