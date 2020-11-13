@@ -1,7 +1,7 @@
 import { dbService, firebaseInstance } from 'fbase';
 import React, {useState} from 'react'
 
-const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, gameId}) => {
+const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, gameId, ref}) => {
     const [isEditing, setIsEditing] = useState(false)
     const [gameTitle, setGameTitle] = useState(title)
     const [gameQuizL, setGameQuizL] = useState(QuizL)
@@ -36,9 +36,13 @@ const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, gameId}) => {
                 .then(() => {console.log("삭제함")});
 
             // game 배열에서도 id 삭제
-            await dbService.doc(`game/${gameId}`).update({
+            await dbService.collection("game").doc(gameId).update({
                 quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(id),
-              });
+            });
+            // ref 삭제는 안됨
+            // await dbService.collection("game").doc(gameId).update({
+            //     quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(`game/${id}`),
+            //   });
         }
     }
 

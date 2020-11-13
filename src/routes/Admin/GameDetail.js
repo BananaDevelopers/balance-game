@@ -26,7 +26,9 @@ const GameDetail = () => {
         let gameObj = doc.data()
         setTitle(gameObj.title)
         setQuizzes([]);
-        gameObj.quizzes.map((quizId) => findQuizById(quizId));
+        gameObj.quizzes.map((quizRef) => {
+          findQuizByRef(quizRef)
+        });
         setIsLoading(true);
       }
     })
@@ -55,15 +57,12 @@ const GameDetail = () => {
     }
   };
 
-  const findQuizById = (quizId) => {
-    dbService
-      .collection("quiz")
-      .doc(quizId)
-      .get()
-      .then(function (doc) {
+  // ref로 quiz 가져오기
+  const findQuizByRef = (quizRef) => {
+    quizRef.get().then((doc) => {
         if (doc.exists) {
           const quizObj = {
-            id: quizId,
+            id: quizRef.id,
             ...doc.data(),
           };
           setQuizzes((prevQuizzes) => [...prevQuizzes, quizObj]);
@@ -226,6 +225,7 @@ const GameDetail = () => {
                     QuizR={quiz.QuizR}
                     QuizRCount={quiz.QuizRCount}
                     gameId={gameId}
+                    gameRef={quiz.ref}
                   />
                 </>
               ))}
