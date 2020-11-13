@@ -5,7 +5,6 @@ const ReplyComment = ({ cmtObj }) => {
   const [nickname, setNickname] = useState("");
   const [pw, setPW] = useState("");
   const [comment, setComment] = useState("");
-
   const [replies, setReplies] = useState([]);
 
   useEffect(() => {
@@ -16,18 +15,19 @@ const ReplyComment = ({ cmtObj }) => {
     const tmp = await dbService.doc(`comment/${cmtObj}`).get();
     const replydocs = tmp.data().reply;
 
-    replydocs.map(async r => {
+    replydocs.map(async (r) => {
       const retmp = await dbService.doc(`replyComment/${r}`).get();
       //console.log(retmp.data());
-      setReplies(prev => [retmp.data(), ...prev]);
+      setReplies((prev) => [retmp.data(), ...prev]);
     });
 
     console.log(replydocs);
   };
 
-  const onChange = e => {
-    const { target: { value } } = e;
-    const { target: { name } } = e;
+  const onChange = (e) => {
+    const {
+      target: { value, name },
+    } = e;
 
     switch (name) {
       case "nickname":
@@ -42,13 +42,13 @@ const ReplyComment = ({ cmtObj }) => {
     }
   };
 
-  const addDB = async reObj => {
+  const addDB = async (reObj) => {
     let cmtDocId;
 
     await dbService
       .collection("replyComment")
       .add(reObj)
-      .then(res => {
+      .then((res) => {
         cmtDocId = res.id;
         console.log(cmtDocId);
       });
@@ -57,9 +57,8 @@ const ReplyComment = ({ cmtObj }) => {
     console.log(prev.data());
 
     await dbService.doc(`comment/${cmtObj}`).update({
-      reply: [cmtDocId, ...prev.data().reply]
+      reply: [cmtDocId, ...prev.data().reply],
     });
-
     // dispatch({
     //   type: ADD_COMMENT,
     //   cmtObj: cmtDocId,
@@ -75,19 +74,19 @@ const ReplyComment = ({ cmtObj }) => {
       date: Date().toLocaleString(),
       nickname: nickname,
       password: pw,
-      like: 0
+      like: 0,
     };
 
     addDB(reObj);
     setComment("");
     setNickname("");
     setPW("");
-    setReplies(prev => [reObj, ...prev]);
+    setReplies((prev) => [reObj, ...prev]);
   };
 
   return (
     <>
-      {replies.map(r => (
+      {replies.map((r) => (
         <div>
           {r.nickname} >> {r.description}
         </div>

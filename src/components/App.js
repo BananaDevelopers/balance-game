@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import AppRouter from "components/Router";
 import { authService } from "../fbase";
+import GlobalStyle from "GlobalStyles";
+
+const Footer = styled.footer`
+  text-align: cetner;
+  width: 100%;
+`;
+
+const LogoutBtn = styled.button``;
+
+const Logout = styled.a`
+  textdecoration: "none";
+  color: "black";
+`;
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -10,7 +24,7 @@ function App() {
     authService.onAuthStateChanged((user) => {
       if (user) {
         setUserObj({
-          uid: user.uid
+          uid: user.uid,
         });
         setIsAdmin(true);
       } else {
@@ -33,16 +47,18 @@ function App() {
 
   return (
     <>
+      <GlobalStyle />
       <AppRouter
         isAdmin={Boolean(isAdmin)}
         refreshUser={refreshUser}
         userObj={userObj}
       />
-      <footer>&copy; Banana Dev {new Date().getFullYear()}</footer>
+
+      <Footer>&copy; Banana Dev {new Date().getFullYear()}</Footer>
       {isAdmin && (
-        <button onClick={onClick}>
-          <a href="/" style={{ textDecoration: "none", color:"black"}}>Logout</a>
-        </button>
+        <LogoutBtn onClick={onClick}>
+          <Logout href="/">Logout</Logout>
+        </LogoutBtn>
       )}
     </>
   );

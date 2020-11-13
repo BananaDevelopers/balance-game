@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
+import styled from "styled-components";
 import Progress from "react-progressbar";
 import Choice from "components/Client/Choice";
 import QuizResult from "components/Client/QuizResult";
@@ -6,6 +7,28 @@ import WriteComment from "components/Client/WriteComment";
 import Comment from "components/Client/Comment";
 import { dbService } from "fbase";
 import { useHistory } from "react-router-dom";
+
+const GamingContainer = styled.div`
+  padding: 50px 20px;
+  background-color: #6eb2f3;
+`;
+
+const QuizNumber = styled.span`
+  padding: 4px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  background-color: #ff6a72;
+  color: #f2f2f2;
+`;
+
+const QuizTitle = styled.div`
+  margin: 20px 0px;
+  padding: 20px 32px;
+  border-radius: 6px;
+  font-size: 18px;
+  background-color: #3e6991;
+  color: #f2f2f2;
+`;
 
 const initialState = {
   comments: [],
@@ -66,7 +89,7 @@ const Gaming = () => {
   const [num, setNum] = useState(0);
   const [resultFlag, setResultFlag] = useState(false);
   const [point, setPoint] = useState(0);
-  const [commentArray, setcommentArray] = useState(comments)
+  const [commentArray, setCommentArray] = useState(comments);
   const history = useHistory();
 
   useEffect(() => {
@@ -80,7 +103,7 @@ const Gaming = () => {
   }, []);
 
   useEffect(() => {
-    console.log('여기')
+    console.log("여기");
     updateComments();
   }, [comments]);
 
@@ -164,11 +187,11 @@ const Gaming = () => {
     ));
 
   return (
-    <>
-      <div>
-        Quiz {num + 1}/{quizs?.length}
-      </div>
-      <div>{quizs !== null ? quizs[num].title : ""}</div>
+    <GamingContainer>
+      <QuizNumber>
+        문제 {num + 1} / {quizs?.length}
+      </QuizNumber>
+      <QuizTitle>{quizs !== null ? quizs[num].title : ""}</QuizTitle>
       {!resultFlag && <Progress completed={progress} />}
       <div onClick={() => choiceClick(0)}>
         {!resultFlag && quizs !== null ? (
@@ -212,7 +235,7 @@ const Gaming = () => {
       <div>{resultFlag && <button onClick={nextClick}>next</button>}</div>
 
       <div>점수:{point}</div>
-    </>
+    </GamingContainer>
   );
 };
 
