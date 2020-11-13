@@ -82,8 +82,19 @@ const GameDetail = () => {
       await dbService
         .collection("game")
         .doc(gameId)
-        .delete()
-        .then(() => {
+        .get()
+        .then((doc) => {
+          if(doc.exists){
+            const gameObj = {
+              id: doc.id,
+              ...doc.data()
+            }
+            // 해당 퀴즈 모두 삭제
+            // 퀴즈에 해당하는 댓글도 삭제(comments 배열의 모든 아이디)
+            // 대댓글 삭제(reply 배열의 모든 아이디)
+            console.log("game삭제 시: "+gameObj);
+          }
+          
           history.push("/gameList");
         }); 
     }
@@ -131,18 +142,13 @@ const GameDetail = () => {
     await dbService
       .collection("quiz")
       .add(quizObj)
-      .then((docRef) => {
-        quizObj = {
-          id: docRef.id,
-          ...quizObj,
-        };
+      .then(async(docRef) => {
+        // 게임에 퀴즈 ref 추가
+        await dbService.collection("game").doc(gameId).update({
+          quizzes: firebaseInstance.firestore.FieldValue.arrayUnion(docRef),
+        });
+
       });
-
-    const newId = quizObj.id;
-
-    await dbService.collection("game").doc(gameId).update({
-      quizzes: firebaseInstance.firestore.FieldValue.arrayUnion(newId),
-    });
 
     initAddQuizForm()
   };

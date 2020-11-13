@@ -173,7 +173,7 @@ const CreateGame = () => {
             ))}
           </div>
           <h5>추가된 문제 수 : {quizCount}</h5>
-          <button onClick={onAddGameClick}>문제 추가</button>
+          <button onClick={onAddGameClick}>게임 생성</button>
         </>
       )}
     </>

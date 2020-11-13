@@ -1,7 +1,7 @@
 import { dbService, firebaseInstance } from 'fbase';
 import React, {useState} from 'react'
 
-const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, gameId, ref}) => {
+const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, gameId}) => {
     const [isEditing, setIsEditing] = useState(false)
     const [gameTitle, setGameTitle] = useState(title)
     const [gameQuizL, setGameQuizL] = useState(QuizL)
@@ -39,7 +39,7 @@ const Quiz  = ({id, title, QuizL, QuizLCount, QuizR,  QuizRCount, gameId, ref}) 
             await dbService.collection("game").doc(gameId).update({
                 quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(id),
             });
-            // ref 삭제는 안됨
+            // ref 삭제는 안됨 (ref 넘겨줌)
             // await dbService.collection("game").doc(gameId).update({
             //     quizzes: firebaseInstance.firestore.FieldValue.arrayRemove(`game/${id}`),
             //   });
