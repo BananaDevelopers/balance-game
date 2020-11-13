@@ -7,7 +7,6 @@ const WriteComment = ({ dispatch, quizObj, propleft }) => {
   const [pw, setPW] = useState("");
   const [comment, setComment] = useState("");
 
-  console.log(propleft);
   const onChange = e => {
     const { target: { value } } = e;
     const { target: { name } } = e;
@@ -22,6 +21,8 @@ const WriteComment = ({ dispatch, quizObj, propleft }) => {
       case "comment":
         setComment(value);
         break;
+      default:
+        break;
     }
   };
 
@@ -33,7 +34,6 @@ const WriteComment = ({ dispatch, quizObj, propleft }) => {
       .add(cmtObj)
       .then(res => {
         cmtDocId = res.id;
-        console.log(cmtDocId);
       });
 
     await dbService.doc(`quiz/${quizObj.docid}`).update({

@@ -12,17 +12,12 @@ const styleRight = {
   //left1
   color: "blue"
 };
-const styleNone = {
-  //left2
-  color: "black"
-};
 //임시
 
 const Comment = ({ cmtObj, quizObj, dispatch }) => {
   const [delFlag, setDelFlag] = useState(false);
   const [replyFlag, setReplyFlag] = useState(false);
   const [pwtext, setPWtext] = useState("");
-
   const [nickname, setNickname] = useState("");
   const [pw, setPW] = useState("");
   const [description, setDescription] = useState("");
@@ -31,18 +26,17 @@ const Comment = ({ cmtObj, quizObj, dispatch }) => {
 
   useEffect(
     () => {
-      console.log(1, cmtObj);
-      setComment();
+      dbService.collection("comment").onSnapshot((snapshot) => {
+        setComment();
+      });
     },
     [cmtObj]
   );
 
   const delDB = async () => {
-    console.log(cmtObj);
 
     const dbcmt = await dbService.doc(`comment/${cmtObj}`).get();
     const dbreply = dbcmt.data().reply;
-    console.log(dbreply);
 
     dbreply.map(async r => {
       await dbService.doc(`replyComment/${r}`).delete();
@@ -53,9 +47,9 @@ const Comment = ({ cmtObj, quizObj, dispatch }) => {
       comments: quizObj.comments.filter(c => c != cmtObj)
     });
   };
+  
   const delClick = () => {
-    // const com = await dbService.doc(`comment/${cmtObj.docid}`).get()
-    // .then(res=>console.log(res))
+
     setDelFlag(true);
     if (pwtext != pw) {
       const error = window.confirm("wrong password");
@@ -76,6 +70,7 @@ const Comment = ({ cmtObj, quizObj, dispatch }) => {
 
     setPWtext(value);
   };
+
   const likeClick = async () => {
     await dbService.doc(`comment/${cmtObj}`).update({
       like: like + 1
@@ -85,7 +80,6 @@ const Comment = ({ cmtObj, quizObj, dispatch }) => {
 
   const setComment = async () => {
     const cmt = await dbService.doc(`comment/${cmtObj}`).get();
-    //console.log(cmt);
     setNickname(cmt.data().nickname);
     setPW(cmt.data().password);
     setDescription(cmt.data().description);

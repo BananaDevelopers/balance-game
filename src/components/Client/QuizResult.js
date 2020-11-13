@@ -1,7 +1,6 @@
 import React from "react";
 
 const QuizResult = ({ obj, flag }) => {
-  console.log(obj);
 
   return (
     <div>

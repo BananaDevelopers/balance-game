@@ -17,7 +17,6 @@ function App() {
         setUserObj(null);
       }
     });
-    console.log(isAdmin);
   }, [isAdmin]);
 
   const refreshUser = () => {
@@ -42,7 +41,7 @@ function App() {
       <footer>&copy; Banana Dev {new Date().getFullYear()}</footer>
       {isAdmin && (
         <button onClick={onClick}>
-          <a href="/">Logout</a>
+          <a href="/" style={{ textDecoration: "none", color:"black"}}>Logout</a>
         </button>
       )}
     </>

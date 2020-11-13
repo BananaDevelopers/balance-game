@@ -11,7 +11,7 @@ import Gaming from "routes/Client/Gaming";
 import GameResult from "routes/Client/GameResult";
 import SuggestionList from "routes/Admin/SuggestionList";
 
-const AppRouter = ({ isAdmin, refreshUser, userObj }) => {
+const AppRouter = ({ isAdmin }) => {
   return (
     <Router>
       {isAdmin && <Navigation />}
