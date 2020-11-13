@@ -15,8 +15,15 @@ const CreateGame = () => {
   const [quizArray, setQuizArray] = useState([]);
   
   const [quizCount, setQuizCount] = useState(0);
+  const [resultCount, setResultCount] = useState(0);
+
+  const [resultTitle, setResultTitle] = useState("");
+  const [resultDescription, setResultDescription] = useState("");
+  const [resultRefArray, setResultRefArray] = useState([]);
+  const [resultArray, setResultArray] = useState([]);
 
   const MIN_QUIZ_COUNT = 2;
+  const MIN_RESULT_COUNT = 2;
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -48,6 +55,26 @@ const CreateGame = () => {
           alert("빈칸 X!");
         }
         break;
+      case "addResult":
+        if (resultTitle !== "" && resultDescription !== "") {
+          const ResultObj = {
+            title: resultTitle,
+            description: resultDescription,
+            date: Date.now(),
+          };
+          await dbService
+            .collection("result")
+            .add(ResultObj)
+            .then((docRef) => {
+              setResultRefArray([...resultRefArray, docRef])
+            });
+          setResultArray([...resultArray, ResultObj]);
+          setResultCount(resultCount + 1);
+          initAddResultForm();
+        } else {
+          alert("빈칸 X!");
+        }
+        break;
 
       default:
         break;
@@ -59,15 +86,20 @@ const CreateGame = () => {
     setQuizL("");
     setQuizR("");
   };
+  
+  const initAddResultForm = () => {
+    setResultTitle("");
+    setResultDescription("");
+  };
 
   const onAddGameClick = async () => {
-    if (quizCount < MIN_QUIZ_COUNT) {
-      alert("문제 더!");
+    if (quizCount < MIN_QUIZ_COUNT || resultCount < MIN_RESULT_COUNT) {
+      alert(`퀴즈 ${MIN_QUIZ_COUNT}개 이상, 결과 ${MIN_RESULT_COUNT} 이상!`);
     } else {
       const gameObj = {
         title: gameTitle,
         quizzes: quizRefArray,
-        results: [],
+        results: resultRefArray,
         date: Date.now(),
       };
       await dbService
@@ -97,6 +129,12 @@ const CreateGame = () => {
       case "QuizR":
         setQuizR(value);
         break;
+      case "resultTitle":
+        setResultTitle(value);
+        break;
+      case "resultDescription":
+        setResultDescription(value);
+        break;
       default:
         break;
     }
@@ -109,6 +147,14 @@ const CreateGame = () => {
       </h5>
     );
   };
+
+  const ResultList = ({ title, description }) => {
+    return (
+      <h5>
+        {title} : {description}
+      </h5>
+    )
+  }
 
   return (
     <>
@@ -162,6 +208,24 @@ const CreateGame = () => {
             />
             <input type="submit" value="추가" />
           </form>
+          <form
+            name="addResult"
+            onSubmit={onSubmit}
+          >
+            <input
+              name="resultTitle"
+              value={resultTitle}
+              onChange={onChange}
+              type="text"
+              placeholder="결과 제목" />
+            <input
+              name="resultDescription"
+              value={resultDescription}
+              onChange={onChange}
+              type="text"
+              placeholder="결과 설명" />
+            <input type="submit" value="추가" />
+          </form>
           <div>
             {quizArray.map((quizObj) => (
               <QuizList
@@ -169,6 +233,15 @@ const CreateGame = () => {
                 title={quizObj.title}
                 QuizL={quizObj.QuizL}
                 QuizR={quizObj.QuizR}
+              />
+            ))}
+          </div>
+          <div>
+            {resultArray.map((resultObj) => (
+              <ResultList
+                key={resultObj.date}
+                title={resultObj.title}
+                description={resultObj.description}
               />
             ))}
           </div>

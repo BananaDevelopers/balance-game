@@ -27,9 +27,7 @@ function GameStart() {
   return (
     <GameStartContainer>
       GameStart
-      <GameStartBtn onClick={onClickStart} style={{}}>
-        시작하기
-      </GameStartBtn>
+      <GameStartBtn onClick={onClickStart}>시작하기</GameStartBtn>
     </GameStartContainer>
   );
 }
