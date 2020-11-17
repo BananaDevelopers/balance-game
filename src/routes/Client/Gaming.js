@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
 import styled from "styled-components";
 import Progress from "react-progressbar";
+import ProgessBar from "@ramonak/react-progress-bar";
 import Choice from "components/Client/Choice";
 import QuizResult from "components/Client/QuizResult";
 import WriteComment from "components/Client/WriteComment";
@@ -9,25 +10,65 @@ import { dbService } from "fbase";
 import { useHistory } from "react-router-dom";
 
 const GamingContainer = styled.div`
-  padding: 50px 20px;
+  padding: 50px 0px;
   background-color: #6eb2f3;
 `;
 
 const QuizNumber = styled.span`
-  padding: 4px 16px;
-  border-radius: 6px;
-  font-size: 12px;
+  margin: 0px 20px;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
   background-color: #ff6a72;
   color: #f2f2f2;
 `;
 
 const QuizTitle = styled.div`
-  margin: 20px 0px;
-  padding: 20px 32px;
+  margin: 20px 20px;
+  padding: 24px 32px;
   border-radius: 6px;
   font-size: 18px;
   background-color: #3e6991;
   color: #f2f2f2;
+`;
+
+const ProgressContainer = styled.div`
+  margin: 0px 20px;
+`;
+
+const QuizLeftContainer = styled.div`
+  margin-top: 20px;
+  width: 80%;
+  height: 28vh;
+  background-color: #f6fafe;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+`;
+
+const QuizRightContainer = styled.div`
+  margin-left: 6vw;
+  width: 80%;
+  height: 28vh;
+  background-color: #f6fafe;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  font-size: 18px;
+  box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.2);
+`;
+
+const VersusText = styled.div`
+  font-size: 60px;
+  color: #ff5e57;
+  text-align: center;
+  margin-bottom: 16px;
 `;
 
 const initialState = {
@@ -112,9 +153,9 @@ const Gaming = () => {
     if (progress < 100)
       timer.current = setTimeout(() => {
         setProgress((prevProgress) => {
-          return prevProgress + 20;
+          return prevProgress + 5;
         });
-      }, 1000);
+      }, 2000);
     else {
       setPoint((prev) => prev + 1); //시간초과 +1
       if (num <= quizs.length - 1) {
@@ -192,8 +233,19 @@ const Gaming = () => {
         문제 {num + 1} / {quizs?.length}
       </QuizNumber>
       <QuizTitle>{quizs !== null ? quizs[num].title : ""}</QuizTitle>
-      {!resultFlag && <Progress completed={progress} />}
-      <div onClick={() => choiceClick(0)}>
+      {!resultFlag && (
+        <ProgressContainer>
+          <ProgessBar
+            completed={progress}
+            bgcolor={"#ffdd59"}
+            height={"20px"}
+            color={"#fad390"}
+            labelAlignment={"outside"}
+            baseBgColor={"#F6FAFE"}
+          />
+        </ProgressContainer>
+      )}
+      <QuizLeftContainer onClick={() => choiceClick(0)}>
         {!resultFlag && quizs !== null ? (
           <Choice text={quizs[num].QuizL} />
         ) : (
@@ -204,9 +256,9 @@ const Gaming = () => {
         ) : (
           ""
         )}
-      </div>
-      {!resultFlag && <p>vs</p>}
-      <div onClick={() => choiceClick(1)}>
+      </QuizLeftContainer>
+      {!resultFlag && <VersusText>vs</VersusText>}
+      <QuizRightContainer onClick={() => choiceClick(1)}>
         {!resultFlag && quizs !== null ? (
           <Choice text={quizs[num].QuizR} />
         ) : (
@@ -217,7 +269,7 @@ const Gaming = () => {
         ) : (
           ""
         )}
-      </div>
+      </QuizRightContainer>
       <div>
         {resultFlag && (
           <div>

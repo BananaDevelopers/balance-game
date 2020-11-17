@@ -63,6 +63,7 @@ const GameDetail = () => {
         if (doc.exists) {
           const quizObj = {
             id: quizRef.id,
+            ref: quizRef,
             ...doc.data(),
           };
           setQuizzes((prevQuizzes) => [...prevQuizzes, quizObj]);
@@ -77,7 +78,7 @@ const GameDetail = () => {
   };
 
   const onDeleteClick = async () => {
-    const ok = window.confirm("Are you sure you want to delete this game?");
+    const ok = window.confirm("게임을 삭제하면 관련 퀴즈와 댓글도 모두 삭제됩니다. 그래도 삭제하시겠습니까?");
     if (ok) {
       await dbService
         .collection("game")
@@ -85,20 +86,85 @@ const GameDetail = () => {
         .get()
         .then((doc) => {
           if(doc.exists){
-            const gameObj = {
-              id: doc.id,
-              ...doc.data()
-            }
-            // 해당 퀴즈 모두 삭제
-            // 퀴즈에 해당하는 댓글도 삭제(comments 배열의 모든 아이디)
-            // 대댓글 삭제(reply 배열의 모든 아이디)
-            console.log("game삭제 시: "+gameObj);
+            const quizRefs = doc.data().quizzes;
+            deleteQuizzes(quizRefs);
           }
-          
+
+          dbService.collection("game")
+          .doc(gameId)
+          .delete()
+          .then(()=>{
+            console.log("game"+ gameId+" 삭제");
+          }).catch(function(error) {
+            console.error("Error removing document: ", error);
+          });
+
           history.push("/gameList");
         }); 
     }
   };
+
+  const deleteQuizzes = (quizRefs) => {
+    if(quizRefs.length > 0){
+      quizRefs.map((quizRef) => {
+        quizRef.get().then((quizDoc)=>{
+          if(quizDoc.exists){
+            const commentIds = quizDoc.data().comments;
+            // 퀴즈에 해당하는 댓글 삭제(comments 배열의 모든 아이디)
+            deleteComments(commentIds)
+          }
+  
+          // 해당 퀴즈 삭제
+          quizRef.delete().then((quizDoc)=>{
+            console.log("quiz"+quizDoc.id+" 삭제");
+          }).catch(function(error) {
+            console.error("Error removing document: ", error);
+          });;
+        });
+      });
+    }
+  }
+
+  const deleteComments = (commentIds) => {
+    if(commentIds.length > 0){
+      commentIds.map((cid)=>{
+        dbService.collection("comment")
+        .doc(cid).get().then((commentDoc)=>{
+          if(commentDoc.exists){
+            const replyIds = commentDoc.data().reply;
+            // 대댓글 삭제(reply 배열의 모든 아이디)
+            deleteReplyComments(replyIds);
+
+            // 해당 댓글 삭제
+            dbService.collection("comment")
+                    .doc(cid)
+                    .delete()
+                    .then(()=>{
+                      console.log("comment"+cid+" 삭제");
+                    }).catch(function(error) {
+                      console.error("Error removing document: ", error);
+                    });;
+          }
+        })
+
+      })
+    }
+  }
+  
+  const deleteReplyComments = (replyIds) => {
+    if(replyIds.length > 0){
+      replyIds.map((rid)=>{
+        dbService.collection("replyComment")
+                  .doc(rid)
+                  .delete()
+                  .then(()=>{
+                    console.log("replyComment"+rid+" 삭제");
+                  }).catch(function(error) {
+                    console.error("Error removing document: ", error);
+                  });
+      });
+    }
+  }
 
   const onEditClick = () => {
     if (editingGame) {
@@ -224,6 +290,7 @@ const GameDetail = () => {
                 <>
                   <Quiz
                     id={quiz.id}
+                    quizRef={quiz.ref}
                     key={quiz.id}
                     title={quiz.title}
                     QuizL={quiz.QuizL}
@@ -231,7 +298,6 @@ const GameDetail = () => {
                     QuizR={quiz.QuizR}
                     QuizRCount={quiz.QuizRCount}
                     gameId={gameId}
-                    gameRef={quiz.ref}
                   />
                 </>
               ))}
