@@ -101,6 +101,7 @@ const CreateGame = () => {
         quizzes: quizRefArray,
         results: resultRefArray,
         date: Date.now(),
+        imgUrl: "",
       };
       await dbService
         .collection("game")

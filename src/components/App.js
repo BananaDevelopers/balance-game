@@ -17,7 +17,7 @@ const Logout = styled.a`
 `;
 
 function App() {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
   const [userObj, setUserObj] = useState(null);
 
   useEffect(() => {
