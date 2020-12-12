@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
 import styled from "styled-components";
-import Progress from "react-progressbar";
 import ProgessBar from "@ramonak/react-progress-bar";
 import Choice from "components/Client/Choice";
 import QuizResult from "components/Client/QuizResult";
@@ -232,7 +231,9 @@ const Gaming = () => {
       <QuizNumber>
         문제 {num + 1} / {quizs?.length}
       </QuizNumber>
+
       <QuizTitle>{quizs !== null ? quizs[num].title : ""}</QuizTitle>
+
       {!resultFlag && (
         <ProgressContainer>
           <ProgessBar
@@ -245,19 +246,24 @@ const Gaming = () => {
           />
         </ProgressContainer>
       )}
-      <QuizLeftContainer onClick={() => choiceClick(0)}>
-        {!resultFlag && quizs !== null ? (
-          <Choice text={quizs[num].QuizL} />
-        ) : (
-          ""
-        )}
-        {resultFlag && quizs !== null ? (
-          <QuizResult obj={quizs[num]} flag={0} />
-        ) : (
-          ""
-        )}
-      </QuizLeftContainer>
+
+      {!resultFlag && (
+        <QuizLeftContainer onClick={() => choiceClick(0)}>
+          {!resultFlag && quizs !== null ? (
+            <Choice text={quizs[num].QuizL} />
+          ) : (
+            ""
+          )}
+          {resultFlag && quizs !== null ? (
+            <QuizResult obj={quizs[num]} flag={0} />
+          ) : (
+            ""
+          )}
+        </QuizLeftContainer>
+      )}
+
       {!resultFlag && <VersusText>vs</VersusText>}
+
       <QuizRightContainer onClick={() => choiceClick(1)}>
         {!resultFlag && quizs !== null ? (
           <Choice text={quizs[num].QuizR} />
@@ -270,6 +276,7 @@ const Gaming = () => {
           ""
         )}
       </QuizRightContainer>
+
       <div>
         {resultFlag && (
           <div>
