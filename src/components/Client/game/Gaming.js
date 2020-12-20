@@ -1,74 +1,12 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
 import styled from "styled-components";
 import ProgessBar from "@ramonak/react-progress-bar";
-import Choice from "components/client/Choice";
-import QuizResult from "components/client/QuizResult";
-import WriteComment from "components/client/WriteComment";
-import Comment from "components/client/Comment";
+import Choice from "components/client/game/Choice";
+import QuizResult from "components/client/game/QuizResult";
+import WriteComment from "components/client/game/WriteComment";
+import Comment from "components/client/game/comment/Comment";
 import { dbService } from "fbase";
 import { useHistory } from "react-router-dom";
-
-const GamingContainer = styled.div`
-  padding: 50px 0px;
-  background-color: #6eb2f3;
-`;
-
-const QuizNumber = styled.span`
-  margin: 0px 20px;
-  padding: 6px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  background-color: #ff6a72;
-  color: #f2f2f2;
-`;
-
-const QuizTitle = styled.div`
-  margin: 20px 20px;
-  padding: 24px 32px;
-  border-radius: 6px;
-  font-size: 18px;
-  background-color: #3e6991;
-  color: #f2f2f2;
-`;
-
-const ProgressContainer = styled.div`
-  margin: 0px 20px;
-`;
-
-const QuizLeftContainer = styled.div`
-  margin-top: 20px;
-  width: 80%;
-  height: 28vh;
-  background-color: #f6fafe;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
-  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
-`;
-
-const QuizRightContainer = styled.div`
-  margin-left: 6vw;
-  width: 80%;
-  height: 28vh;
-  background-color: #f6fafe;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
-  font-size: 18px;
-  box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.2);
-`;
-
-const VersusText = styled.div`
-  font-size: 60px;
-  color: #ff5e57;
-  text-align: center;
-  margin-bottom: 16px;
-`;
 
 const initialState = {
   comments: [],
@@ -298,3 +236,65 @@ const Gaming = () => {
 };
 
 export default Gaming;
+
+const GamingContainer = styled.div`
+  padding: 50px 0px;
+  background-color: #6eb2f3;
+`;
+
+const QuizNumber = styled.span`
+  margin: 0px 20px;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  background-color: #ff6a72;
+  color: #f2f2f2;
+`;
+
+const QuizTitle = styled.div`
+  margin: 20px 20px;
+  padding: 24px 32px;
+  border-radius: 6px;
+  font-size: 18px;
+  background-color: #3e6991;
+  color: #f2f2f2;
+`;
+
+const ProgressContainer = styled.div`
+  margin: 0px 20px;
+`;
+
+const QuizLeftContainer = styled.div`
+  margin-top: 20px;
+  width: 80%;
+  height: 28vh;
+  background-color: #f6fafe;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+`;
+
+const QuizRightContainer = styled.div`
+  margin-left: 6vw;
+  width: 80%;
+  height: 28vh;
+  background-color: #f6fafe;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  font-size: 18px;
+  box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.2);
+`;
+
+const VersusText = styled.div`
+  font-size: 60px;
+  color: #ff5e57;
+  text-align: center;
+  margin-bottom: 16px;
+`;

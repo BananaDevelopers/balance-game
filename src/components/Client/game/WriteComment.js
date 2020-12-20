@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { ADD_COMMENT } from "../../pages/client/Gaming";
+import { ADD_COMMENT } from "./Gaming";
 import { dbService } from "fbase";
 
 const WriteComment = ({ dispatch, quizObj, propleft }) => {

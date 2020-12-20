@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { dbService } from "fbase";
-import { DEL_COMMENT } from "../../pages/client/Gaming";
+import { DEL_COMMENT } from "../Gaming";
 import ReplyComment from "./ReplyComment";
 
 //임시 스타일
