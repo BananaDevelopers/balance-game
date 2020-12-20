@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { ADD_COMMENT } from "../../routes/Client/Gaming";
+import { ADD_COMMENT } from "../../pages/client/Gaming";
 import { dbService } from "fbase";
 
 const WriteComment = ({ dispatch, quizObj, propleft }) => {
@@ -7,9 +7,13 @@ const WriteComment = ({ dispatch, quizObj, propleft }) => {
   const [pw, setPW] = useState("");
   const [comment, setComment] = useState("");
 
-  const onChange = e => {
-    const { target: { value } } = e;
-    const { target: { name } } = e;
+  const onChange = (e) => {
+    const {
+      target: { value },
+    } = e;
+    const {
+      target: { name },
+    } = e;
 
     switch (name) {
       case "nickname":
@@ -26,29 +30,29 @@ const WriteComment = ({ dispatch, quizObj, propleft }) => {
     }
   };
 
-  const addDB = async cmtObj => {
+  const addDB = async (cmtObj) => {
     let cmtDocId;
 
     await dbService
       .collection("comment")
       .add(cmtObj)
-      .then(res => {
+      .then((res) => {
         cmtDocId = res.id;
       });
 
     await dbService.doc(`quiz/${quizObj.docid}`).update({
-      comments: [cmtDocId, ...quizObj.comments]
+      comments: [cmtDocId, ...quizObj.comments],
     });
 
     dispatch({
       type: ADD_COMMENT,
       cmtObj: cmtDocId,
-      qdocid: quizObj.docid
+      qdocid: quizObj.docid,
     });
   };
 
   const onSubmit = (e) => {
-      e.preventDefault();
+    e.preventDefault();
     const cmtObj = {
       description: comment,
       date: Date().toLocaleString(),
@@ -56,7 +60,7 @@ const WriteComment = ({ dispatch, quizObj, propleft }) => {
       password: pw,
       like: 0,
       left: propleft,
-      reply: []
+      reply: [],
     };
 
     addDB(cmtObj);

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useReducer } from "react";
 import styled from "styled-components";
 import ProgessBar from "@ramonak/react-progress-bar";
-import Choice from "components/Client/Choice";
-import QuizResult from "components/Client/QuizResult";
-import WriteComment from "components/Client/WriteComment";
-import Comment from "components/Client/Comment";
+import Choice from "components/client/Choice";
+import QuizResult from "components/client/QuizResult";
+import WriteComment from "components/client/WriteComment";
+import Comment from "components/client/Comment";
 import { dbService } from "fbase";
 import { useHistory } from "react-router-dom";
 
@@ -98,7 +98,7 @@ const reducer = (state, action) => {
     case DEL_COMMENT: {
       return {
         ...state,
-        comments: state.comments.filter((c) => c != action.cmtObj),
+        comments: state.comments.filter((c) => c !== action.cmtObj),
       };
     }
     case SET_COMMENT: {
@@ -129,7 +129,6 @@ const Gaming = () => {
   const [num, setNum] = useState(0);
   const [resultFlag, setResultFlag] = useState(false);
   const [point, setPoint] = useState(0);
-  const [commentArray, setCommentArray] = useState(comments);
   const history = useHistory();
 
   useEffect(() => {

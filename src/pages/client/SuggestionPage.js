@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { dbService } from "fbase";
-import Suggest from "components/Client/Suggest";
+import Suggest from "components/client/Suggest";
 
 function SuggestionPage() {
   const [Suggestions, setSuggestions] = useState([]);

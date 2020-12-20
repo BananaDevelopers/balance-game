@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Game from "components/Admin/Game";
+
 import { dbService } from "fbase";
+import Game from "components/admin/game-list/Game";
 
 const GameList = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,16 +10,19 @@ const GameList = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    dbService.collection("game").get().then((snapshot) => {
-      // init games
-      const gameArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setGames(gameArray);
-      setSearchList(gameArray);
-      setIsLoading(true);
-    })
+    dbService
+      .collection("game")
+      .get()
+      .then((snapshot) => {
+        // init games
+        const gameArray = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setGames(gameArray);
+        setSearchList(gameArray);
+        setIsLoading(true);
+      });
   }, []);
 
   const onSearchClick = () => {

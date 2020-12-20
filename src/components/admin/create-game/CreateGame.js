@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { dbService } from "fbase";
 import { useHistory } from "react-router-dom";
+
+import { dbService } from "fbase";
 
 const CreateGame = () => {
   const history = useHistory();
@@ -13,7 +14,7 @@ const CreateGame = () => {
   const [QuizR, setQuizR] = useState("");
   const [quizRefArray, setQuizRefArray] = useState([]);
   const [quizArray, setQuizArray] = useState([]);
-  
+
   const [quizCount, setQuizCount] = useState(0);
   const [resultCount, setResultCount] = useState(0);
 
@@ -46,7 +47,7 @@ const CreateGame = () => {
             .collection("quiz")
             .add(quizObj)
             .then((docRef) => {
-              setQuizRefArray([...quizRefArray, docRef])
+              setQuizRefArray([...quizRefArray, docRef]);
             }); // ref 추가로 변경
           setQuizArray([...quizArray, quizObj]);
           setQuizCount(quizCount + 1);
@@ -66,7 +67,7 @@ const CreateGame = () => {
             .collection("result")
             .add(ResultObj)
             .then((docRef) => {
-              setResultRefArray([...resultRefArray, docRef])
+              setResultRefArray([...resultRefArray, docRef]);
             });
           setResultArray([...resultArray, ResultObj]);
           setResultCount(resultCount + 1);
@@ -86,7 +87,7 @@ const CreateGame = () => {
     setQuizL("");
     setQuizR("");
   };
-  
+
   const initAddResultForm = () => {
     setResultTitle("");
     setResultDescription("");
@@ -107,7 +108,7 @@ const CreateGame = () => {
         .collection("game")
         .add(gameObj)
         .then(() => {
-          history.push(`/gameList`);
+          history.push(`/admin/game-list`);
         });
     }
   };
@@ -154,12 +155,11 @@ const CreateGame = () => {
       <h5>
         {title} : {description}
       </h5>
-    )
-  }
+    );
+  };
 
   return (
     <>
-      <h1>게임 추가</h1>
       {!titleFlag ? (
         <>
           <p>게임 이름</p>
@@ -209,22 +209,21 @@ const CreateGame = () => {
             />
             <input type="submit" value="추가" />
           </form>
-          <form
-            name="addResult"
-            onSubmit={onSubmit}
-          >
+          <form name="addResult" onSubmit={onSubmit}>
             <input
               name="resultTitle"
               value={resultTitle}
               onChange={onChange}
               type="text"
-              placeholder="결과 제목" />
+              placeholder="결과 제목"
+            />
             <input
               name="resultDescription"
               value={resultDescription}
               onChange={onChange}
               type="text"
-              placeholder="결과 설명" />
+              placeholder="결과 설명"
+            />
             <input type="submit" value="추가" />
           </form>
           <div>

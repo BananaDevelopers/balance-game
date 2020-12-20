@@ -6,7 +6,7 @@ function Game({ id, title }) {
     <li>
       <p>#{id}</p>
       <p>{title}</p>
-      <Link to={`/gameDetail/${id}`}>
+      <Link to={`/admin/game-detail/${id}`}>
         <u>상세보기</u>
       </Link>
     </li>

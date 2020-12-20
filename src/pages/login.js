@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { authService } from "../../fbase";
+import { useHistory } from "react-router-dom";
 
+import { authService } from "fbase";
 
-const AdminLogin = () => {
+const Login = () => {
+  const history = useHistory();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
   const onChange = (event) => {
     const {
       target: { name, value },
@@ -16,15 +20,20 @@ const AdminLogin = () => {
       setPassword(value);
     }
   };
+
   const onSubmit = async (event) => {
     event.preventDefault();
-    try {
-      let data;
-      data = await authService.signInWithEmailAndPassword(email, password);
-    } catch (error) {
-      setError(error.message);
-    }
+    await authService
+      .signInWithEmailAndPassword(email, password)
+      .then((user) => {
+        console.log("로그인 성공");
+        history.push("/admin");
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
   };
+
   return (
     <>
       <form onSubmit={onSubmit} className="container">
@@ -35,7 +44,6 @@ const AdminLogin = () => {
           required
           value={email}
           onChange={onChange}
-          className="authInput"
         />
         <input
           name="password"
@@ -43,17 +51,12 @@ const AdminLogin = () => {
           placeholder="Password"
           required
           value={password}
-          className="authInput"
           onChange={onChange}
         />
-        <input
-          type="submit"
-          className="authInput authSubmit"
-          value={"Sign In"}
-        />
+        <input type="submit" value="로그인" />
         {error && <span className="authError">{error}</span>}
       </form>
     </>
   );
 };
-export default AdminLogin;
+export default Login;

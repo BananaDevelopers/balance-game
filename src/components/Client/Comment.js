@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { dbService } from "fbase";
-import { DEL_COMMENT } from "../../routes/Client/Gaming";
+import { DEL_COMMENT } from "../../pages/client/Gaming";
 import ReplyComment from "./ReplyComment";
 
 //임시 스타일
 const styleLeft = {
   //left0
-  color: "red"
+  color: "red",
 };
 const styleRight = {
   //left1
-  color: "blue"
+  color: "blue",
 };
 //임시
 
@@ -24,32 +24,27 @@ const Comment = ({ cmtObj, quizObj, dispatch }) => {
   const [like, setLike] = useState();
   const [left, setLeft] = useState();
 
-  useEffect(
-    () => {
-      dbService.collection("comment").onSnapshot((snapshot) => {
-        setComment();
-      });
-    },
-    [cmtObj]
-  );
+  useEffect(() => {
+    dbService.collection("comment").onSnapshot((snapshot) => {
+      setComment();
+    });
+  }, [cmtObj]);
 
   const delDB = async () => {
-
     const dbcmt = await dbService.doc(`comment/${cmtObj}`).get();
     const dbreply = dbcmt.data().reply;
 
-    dbreply.map(async r => {
+    dbreply.map(async (r) => {
       await dbService.doc(`replyComment/${r}`).delete();
     });
 
     await dbService.doc(`comment/${cmtObj}`).delete();
     await dbService.doc(`quiz/${quizObj.docid}`).update({
-      comments: quizObj.comments.filter(c => c != cmtObj)
+      comments: quizObj.comments.filter((c) => c != cmtObj),
     });
   };
-  
-  const delClick = () => {
 
+  const delClick = () => {
     setDelFlag(true);
     if (pwtext != pw) {
       const error = window.confirm("wrong password");
@@ -65,17 +60,19 @@ const Comment = ({ cmtObj, quizObj, dispatch }) => {
     setPWtext("");
   };
 
-  const onChange = e => {
-    const { target: { value } } = e;
+  const onChange = (e) => {
+    const {
+      target: { value },
+    } = e;
 
     setPWtext(value);
   };
 
   const likeClick = async () => {
     await dbService.doc(`comment/${cmtObj}`).update({
-      like: like + 1
+      like: like + 1,
     });
-    setLike(prev => prev + 1);
+    setLike((prev) => prev + 1);
   };
 
   const setComment = async () => {

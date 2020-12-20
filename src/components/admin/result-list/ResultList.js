@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { dbService, firebaseInstance } from "fbase";
+import { dbService } from "fbase";
 
-const Results = () => {
-
+const ResultList = () => {
   let params = useParams();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +40,9 @@ const Results = () => {
   // ]);
 
   const findResultByRef = (resultRef) => {
-    resultRef.get().then((doc) => {
+    resultRef
+      .get()
+      .then((doc) => {
         if (doc.exists) {
           const resultObj = {
             id: resultRef.id,
@@ -70,28 +71,32 @@ const Results = () => {
         });
         setIsLoading(true);
       }
-    })
+    });
   }, []);
 
   return (
     <div>
       <h1>결과보기 (#{id})</h1>
       <button>결과 수정</button>
-      {isLoading ? <div>
-        <ul>
-          {results.map((result) => (
-            <li>
-              <p>{result.id}</p>
-              <p>{result.title}</p>
-              <p>{result.imgUrl}</p>
-              <p>{result.description}</p>
-              <p>{result.date}</p>
-            </li>
-          ))}
-        </ul>
-      </div> : <p>Loading...</p>}
+      {isLoading ? (
+        <div>
+          <ul>
+            {results.map((result) => (
+              <li>
+                <p>{result.id}</p>
+                <p>{result.title}</p>
+                <p>{result.imgUrl}</p>
+                <p>{result.description}</p>
+                <p>{result.date}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
     </div>
   );
 };
 
-export default Results;
+export default ResultList;

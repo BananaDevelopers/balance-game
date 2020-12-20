@@ -9,7 +9,7 @@ const ReplyComment = ({ cmtObj }) => {
 
   useEffect(() => {
     setReply();
-  }, []);
+  });
 
   const setReply = async () => {
     const tmp = await dbService.doc(`comment/${cmtObj}`).get();
@@ -90,7 +90,7 @@ const ReplyComment = ({ cmtObj }) => {
     <>
       {replies.map((r) => (
         <div>
-          {r.nickname} >> {r.description}
+          {r.nickname} &gt; {r.description}
         </div>
       ))}
       nickname{" "}
