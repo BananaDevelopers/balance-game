@@ -1,6 +1,7 @@
 import React from "react";
 
 const QuizResult = ({ obj, flag }) => {
+  if (!obj) return null;
 
   return (
     <div>
