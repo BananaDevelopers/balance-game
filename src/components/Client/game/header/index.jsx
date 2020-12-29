@@ -1,13 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-function GameHeader({
-  num,
-  quizesLength,
-  quizTitle,
-  resultFlag,
-  progress,
-}) {
+function GameHeader({ num, quizesLength, quizTitle }) {
   return (
     <>
       <QuizNumber>
