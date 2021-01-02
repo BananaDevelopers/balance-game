@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import { dbService } from "fbase";
@@ -7,47 +7,47 @@ import Quiz, {
   LEFT,
   RIGHT,
 } from "components/client/game/quiz-select-page/Quiz";
-import { SET_POINT, SET_SELECTION, SET_RESULT_FLAG } from "../Gaming";
 
 const PROGRESSBAR_SEC = 10; // 제한시간
 
-function QuizSelectPage({ quiz = null, dispatch }) {
+function QuizSelectPage({ quiz, onSelectQuiz }) {
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
     setWidth(100);
     const timeout = setTimeout(() => {
-      goToQuizResultPage();
+      onSelectQuiz(null, null);
     }, PROGRESSBAR_SEC * 1000);
 
     return () => clearTimeout(timeout);
   }, []);
 
   const onClick = async (selection) => {
-    dispatch({ type: SET_SELECTION, selection: selection });
-
-    dispatch({
-      type: SET_POINT,
-      quizLCount: quiz.QuizLCount,
-      quizRCount: quiz.QuizRCount,
-    });
-
-    // todo: set_selection dispatch 안에 넣기
-    if (selection === LEFT) {
-      await dbService.doc(`quiz/${quiz.docid}`).update({
-        QuizLCount: quiz.QuizLCount + 1,
-      });
-    } else if (selection === RIGHT) {
-      await dbService.doc(`quiz/${quiz.docid}`).update({
-        QuizRCount: quiz.QuizRCount + 1,
-      });
-    }
-
-    goToQuizResultPage();
+    dbService.doc(`quiz/${quiz.id}`).update(
+      selection === LEFT
+        ? {
+            QuizLCount: quiz.QuizLCount + 1,
+          }
+        : {
+            QuizRCount: quiz.QuizRCount + 1,
+          }
+    );
+    onSelectQuiz(selection, earnedPoint(selection));
   };
 
-  const goToQuizResultPage = () => {
-    dispatch({ type: SET_RESULT_FLAG, resultFlag: true });
+  const earnedPoint = (selection) => {
+    const quizLCount = quiz.QuizLCount;
+    const quizRCount = quiz.QuizRCount;
+
+    if (
+      (quizLCount > quizRCount && selection === LEFT) ||
+      (quizLCount < quizRCount && selection === RIGHT)
+    ) {
+      //다수선택지
+      return 2;
+    } else {
+      return 1;
+    }
   };
 
   return (
@@ -56,17 +56,9 @@ function QuizSelectPage({ quiz = null, dispatch }) {
         <GameProgressBar style={{ width: `${width}%` }} sec={PROGRESSBAR_SEC} />
       </ProgressContainer>
 
-      <Quiz
-        direction={LEFT}
-        text={quiz ? quiz.QuizL : null}
-        onClick={onClick}
-      />
+      <Quiz direction={LEFT} text={quiz.QuizL} onClick={onClick} />
       <VersusText>vs</VersusText>
-      <Quiz
-        direction={RIGHT}
-        text={quiz ? quiz.QuizR : null}
-        onClick={onClick}
-      />
+      <Quiz direction={RIGHT} text={quiz.QuizR} onClick={onClick} />
     </>
   );
 }

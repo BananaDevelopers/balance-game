@@ -5,7 +5,7 @@ function GameHeader({ num, quizesLength, quizTitle }) {
   return (
     <>
       <QuizNumber>
-        문제 {num + 1} / {quizesLength}
+        문제 {num} / {quizesLength}
       </QuizNumber>
       <QuizTitle>{quizTitle}</QuizTitle>
     </>
