@@ -1,6 +1,5 @@
 import React from "react";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
-import GameResult from "components/client/game-result/GameResult";
 
 import GameStartPage from "./client";
 import Login from "pages/login";
